@@ -25,6 +25,9 @@ export default function AuthNavLink() {
               Trend
             </Link>
           )}
+          <Link className="px-8 uppercase hover:underline" href="/create-post">
+            Create Post
+          </Link>
           <DropdownMenu>
             <DropdownMenuTrigger>
               <Avatar>
