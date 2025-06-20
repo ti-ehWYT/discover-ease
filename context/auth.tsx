@@ -21,7 +21,7 @@ type AuthContextType = {
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [currentUser, setCurrentUser ] = useState<User | null>(null);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [customClaims, setCustomClaims] = useState<ParsedToken | null>(null);
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
@@ -44,10 +44,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       }
 
       if (user && analytics) {
-        logEvent(analytics, "custom_active_user", {
-          uid: user.uid,
-          email: user.email,
-          displayName: user.displayName,
+        logEvent(analytics, "user_login_from", {
+          method: "google",
+          userID: user.uid,
         });
       }
     });
@@ -63,6 +62,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const signInWithGoogle = async () => {
     const provider = new GoogleAuthProvider();
+    provider.setCustomParameters({
+      prompt: "select_account", // Always ask the user to choose an account
+    });
     await signInWithPopup(auth, provider);
   };
 
@@ -74,7 +76,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         signInWithGoogle,
         customClaims,
       }}
-      
     >
       {children}
     </AuthContext.Provider>
