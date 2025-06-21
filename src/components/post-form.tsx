@@ -4,7 +4,14 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { formDataSchema } from "../../validation/postSchema";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "./ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "./ui/form";
 import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
 import { Button } from "./ui/button";
@@ -25,12 +32,12 @@ export default function PostForm({ handleSubmit, submitButtonLabel }: Props) {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleSubmit)}>
-        <fieldset>
+        <fieldset disabled={form.formState.isSubmitting}>
           <FormField
             control={form.control}
             name="title"
             render={({ field }) => (
-              <FormItem   className="py-3">
+              <FormItem className="py-3">
                 <FormLabel>Title</FormLabel>
                 <FormControl>
                   <Input {...field} />
@@ -46,7 +53,7 @@ export default function PostForm({ handleSubmit, submitButtonLabel }: Props) {
               <FormItem className="py-3">
                 <FormLabel>Description</FormLabel>
                 <FormControl>
-                  <Textarea {...field} rows={5} className="resize-none"/>
+                  <Textarea {...field} rows={5} className="resize-none" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -66,7 +73,9 @@ export default function PostForm({ handleSubmit, submitButtonLabel }: Props) {
             )}
           />
         </fieldset>
-        <Button type="submit">{submitButtonLabel}</Button>
+        <Button type="submit" disabled={form.formState.isSubmitting}>
+          {submitButtonLabel}
+        </Button>
       </form>
     </Form>
   );

@@ -12,10 +12,11 @@ import {
 } from "./ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "./ui/avatar";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 export default function AuthNavLink() {
   const auth = useAuth();
-
+  const router = useRouter();
   return (
     <div>
       {!!auth?.currentUser && (
@@ -61,6 +62,7 @@ export default function AuthNavLink() {
               <DropdownMenuItem
                 onClick={async () => {
                   await auth.signOut();
+                  router.push('/');
                 }}
               >
                 Logout
