@@ -48,47 +48,49 @@ export default function LoginForm() {
     }
   };
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)}>
-        <fieldset
-          disabled={form.formState.isSubmitting}
-          className="flex flex-col gap-4"
-        >
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => {
-              return (
-                <FormItem>
-                  <FormControl>
-                    <Input {...field} placeholder="Email" />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              );
-            }}
-          />
-          <FormField
-            control={form.control}
-            name="password"
-            render={({ field }) => {
-              return (
-                <FormItem>
-                  <FormControl>
-                    <Input {...field} placeholder="Password" type="password" />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              );
-            }}
-          />
-          <Button type="submit" className="w-full">
-            Login
-          </Button>
-          <div className="text-center">or</div>
-          <GoogleLoginButton />
-        </fieldset>
-      </form>
-    </Form>
+    <div>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(handleSubmit)}>
+          <fieldset
+            disabled={form.formState.isSubmitting}
+            className="flex flex-col gap-4"
+          >
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => {
+                return (
+                  <FormItem>
+                    <FormControl>
+                      <Input {...field} placeholder="Email" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => {
+                return (
+                  <FormItem>
+                    <FormControl>
+                      <Input {...field} placeholder="Password" type="password" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
+            <Button type="submit" className="w-full">
+              Login
+            </Button>
+            <div className="text-center">or</div>
+          </fieldset>
+        </form>
+      </Form>
+      <GoogleLoginButton />
+    </div>
   );
 }
