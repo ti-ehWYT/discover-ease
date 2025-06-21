@@ -10,6 +10,7 @@ export const saveNewPost = async (data: {
   token: string;
 }) => {
   const { token, ...formData } = data;
+
   const verifiedToken = await auth.verifyIdToken(token);
 
   if (!verifiedToken) {
@@ -27,10 +28,11 @@ export const saveNewPost = async (data: {
     };
   }
 
-  const post = await firestore.collection("post").add({
+  const post = await firestore.collection("posts").add({
     ...formData,
     created: new Date(),
     updated: new Date(),
+    authorId: verifiedToken.uid,
   });
 
   return {
