@@ -9,19 +9,36 @@ export async function middleware(request: NextRequest) {
 
   const cookieStore = await cookies();
   const token = cookieStore.get("firebaseAuthToken")?.value;
+  const { pathname } = request.nextUrl;
 
-  if (!token && request.nextUrl.pathname.startsWith("/login")) {
+  if (
+    !token &&
+    (pathname.startsWith("/login") || pathname.startsWith("/register"))
+  ) {
     return NextResponse.next();
   }
-  if (token && request.nextUrl.pathname.startsWith("/login")) {
+  if (
+    token &&
+    (pathname.startsWith("/login") || pathname.startsWith("/register"))
+  ) {
     return NextResponse.redirect(new URL("/", request.url));
   }
+
+  if (
+    !token &&
+    (pathname.startsWith("/create-post") ||
+      pathname.startsWith("/edit-post") ||
+      pathname.startsWith("/my-profile"))
+  ) {
+    return NextResponse.redirect(new URL("/", request.url));
+  }
+
   if (!token) {
     return NextResponse.redirect(new URL("/", request.url));
   }
   const decodedToken = decodeJwt(token);
 
-  if (!decodedToken.admin) {
+  if (!decodedToken.admin && pathname.startsWith("/dashboard")) {
     return NextResponse.redirect(new URL("/", request.url));
   }
 
@@ -29,5 +46,12 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/trend"],
+  matcher: [
+    "/dashboard",
+    "/create-post",
+    "/edit-post/:path*",
+    "/my-profile",
+    "/login",
+    "/register",
+  ],
 };

@@ -15,7 +15,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { passwordValidation } from "../../../../validation/registerUser";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import GoogleLoginButton from "@/components/GoogleLoginButton";
+import GoogleLoginButton from "@/components/google-login-button";
 import { useRouter } from "next/navigation";
 
 const formSchema = z.object({

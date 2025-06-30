@@ -57,7 +57,7 @@ export default function AuthNavLink() {
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem asChild>
-                <Link href="/my-account">My Account</Link>
+                <Link href="/my-profile">My Profile</Link>
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={async () => {

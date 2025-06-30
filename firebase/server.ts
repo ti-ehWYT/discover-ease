@@ -3,8 +3,6 @@ import { Firestore, getFirestore } from "firebase-admin/firestore";
 import admin from "firebase-admin";
 import { Auth, getAuth } from "firebase-admin/auth";
 
-
-
 const serviceAccount = {
   type: "service_account",
   project_id: "discover-ease-ee29d",
@@ -25,15 +23,14 @@ let auth: Auth;
 const currentApps = getApps();
 
 if (!currentApps.length) {
-    const app = admin.initializeApp({
-        credential: admin.credential.cert(serviceAccount as ServiceAccount)
-    });
-    firestore = getFirestore(app);
-    auth = getAuth(app);
-
+  const app = admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount as ServiceAccount),
+  });
+  firestore = getFirestore(app);
+  auth = getAuth(app);
 } else {
-    const app = currentApps[0];
-    firestore = getFirestore(app);
-    auth = getAuth(app);
+  const app = currentApps[0];
+  firestore = getFirestore(app);
+  auth = getAuth(app);
 }
 export { firestore, auth };
