@@ -1,5 +1,4 @@
 "use server";
-
 import { auth, firestore } from "../../../../firebase/server";
 import { formDataSchema } from "../../../../validation/postSchema";
 

@@ -1,5 +1,5 @@
 "use client";
-import GoogleLoginButton from "@/components/GoogleLoginButton";
+import GoogleLoginButton from "@/components/google-login-button";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -10,8 +10,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { useRouter } from "next/navigation";
 import LoginForm from "./login-form";
 

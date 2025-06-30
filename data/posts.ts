@@ -1,24 +1,53 @@
 import "server-only";
-import { firestore } from "../firebase/server";
+import { firestore, auth } from "../firebase/server";
 import { Post } from "../type/post";
+import { cookies } from "next/headers";
 
-export const getPosts = async (searchTxt?: string) => {
-  let postQuery = firestore.collection("posts").orderBy("created", "desc");
+export const getPosts = async () => {
+  const postQuery = firestore.collection("posts").orderBy("created", "desc");
+  const snap = await postQuery.get();
+  const posts = snap.docs.map(
+    (doc) =>
+      ({
+        id: doc.id,
+        ...doc.data(),
+      } as Post)
+  );
+  return { data: posts };
+};
 
-  if (searchTxt?.trim()) {
-    // Firestore can only do *prefix* matching on a single field with two range filters
-    const txt = searchTxt.trim();
-    postQuery = postQuery
-      .orderBy("title") // secondary orderBy must match the where field
-      .startAt(txt)
-      .endAt(txt + "\uf8ff");
+export const getAuthorPosts = async () => {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("firebaseAuthToken")?.value;
+  if (!token) {
+    return { data: [] };
   }
+  const verifiedToken = await auth.verifyIdToken(token);
+  if (!verifiedToken) {
+    return { data: [] };
+  }
+  const postQuery = firestore
+    .collection("posts")
+    .where("authorId", "==", verifiedToken.uid)
+    .orderBy("created", "desc");
 
   const snap = await postQuery.get();
+  const posts = snap.docs.map(
+    (doc) =>
+      ({
+        id: doc.id,
+        ...doc.data(),
+      } as Post)
+  );
 
-  const posts = snap.docs.map((doc) => ({
-    id: doc.id,
-    ...doc.data(),
-  }) as Post)
-  return { data: posts }
+  return { data: posts };
 };
+
+export const getPostById = async (postId: string) => {
+  const postSnapshot = await firestore.collection('posts').doc(postId).get();
+  const postData = {
+    id: postId,
+    ...postSnapshot.data(),
+  } as Post;
+  return postData;
+}

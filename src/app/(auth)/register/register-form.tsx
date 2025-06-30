@@ -17,7 +17,7 @@ import { useRouter } from "next/navigation";
 import { registerUser } from "./action";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import GoogleLoginButton from "@/components/GoogleLoginButton";
+import GoogleLoginButton from "@/components/google-login-button";
 
 export default function RegisterForm() {
   const router = useRouter();
