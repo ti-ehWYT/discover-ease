@@ -42,9 +42,6 @@ export default function PostDialog({
           </CardHeader>
           <CardContent>
             <h2 className="text-lg font-semibold">{postItem.title}</h2>
-            <p className="text-sm text-muted-foreground">
-              {postItem.description}
-            </p>
           </CardContent>
         </Card>
       </DialogTrigger>
