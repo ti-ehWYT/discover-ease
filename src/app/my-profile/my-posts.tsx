@@ -8,7 +8,7 @@ export default async function MyPosts() {
   return (
     <div>
       {data.map((post: Post) => {
-        return <PostDialog key={post.id} postItem={post} />;
+        return <PostDialog key={post.id} postItem={post} allowEdit/>;
       })}
     </div>
   );

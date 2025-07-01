@@ -7,7 +7,7 @@ export default async function Home() {
   return (
     <div className="columns-1 sm:columns-2 md:columns-3 gap-4 p-4">
       {data.map((item) => (
-        <PostDialog key={item.id} postItem={item} />
+        <PostDialog key={item.id} postItem={item} allowEdit={false} />
       ))}
     </div>
   );
