@@ -18,12 +18,12 @@ export default function AuthNavLink() {
   const auth = useAuth();
   const router = useRouter();
   return (
-    <div>
+    <>
       {!!auth?.currentUser && (
         <>
           {!!auth.customClaims?.admin && (
-            <Link className="px-8 uppercase hover:underline" href="/trend">
-              Trend
+            <Link className="px-8 uppercase hover:underline" href="/dashboard">
+              Dashboard
             </Link>
           )}
           <Link className="px-8 uppercase hover:underline" href="/create-post">
@@ -62,7 +62,7 @@ export default function AuthNavLink() {
               <DropdownMenuItem
                 onClick={async () => {
                   await auth.signOut();
-                  router.push('/');
+                  router.push("/");
                 }}
               >
                 Logout
@@ -81,6 +81,6 @@ export default function AuthNavLink() {
           </Link>
         </>
       )}
-    </div>
+    </>
   );
 }
