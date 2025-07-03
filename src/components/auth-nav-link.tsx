@@ -13,6 +13,7 @@ import {
 import { Avatar, AvatarFallback } from "./ui/avatar";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { VscDiffAdded } from "react-icons/vsc";
 
 export default function AuthNavLink() {
   const auth = useAuth();
@@ -26,8 +27,8 @@ export default function AuthNavLink() {
               Dashboard
             </Link>
           )}
-          <Link className="px-8 uppercase hover:underline" href="/create-post">
-            Create Post
+          <Link className="px-4 text-3xl hover:text-green-500" href="/create-post">
+            <VscDiffAdded />
           </Link>
           <DropdownMenu>
             <DropdownMenuTrigger>
