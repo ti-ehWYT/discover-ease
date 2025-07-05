@@ -46,37 +46,52 @@ export default function PostDialog({
         </Card>
       </DialogTrigger>
 
-      <DialogContent>
-        <DialogHeader></DialogHeader>
-        <Carousel>
-          <CarouselContent>
-            {postItem.images?.map((image, index) => {
-              return (
-                <CarouselItem key={image} className="w-full h-auto">
-                  <Image
-                    src={`https://firebasestorage.googleapis.com/v0/b/discover-ease-ee29d.firebasestorage.app/o/${encodeURIComponent(
-                      image
-                    )}?alt=media`}
-                    alt={`Image ${index + 1}`}
-                    width={0}
-                    height={0}
-                    sizes="100vw"
-                    className="h-auto w-auto max-w-full rounded-md"
-                  />
+      <DialogContent
+        className=" flex max-h-3/4 max-w overflow-hidden"
+        style={{ minWidth: "60vw" }}
+      >
+        <div className="flex-1">
+          <Carousel>
+            <CarouselContent>
+              {postItem.images?.map((image, index) => (
+                <CarouselItem key={image}>
+                  <div className="rounded-md relative h-[70vh] min-h-80">
+                    <Image
+                      src={`https://firebasestorage.googleapis.com/v0/b/discover-ease-ee29d.firebasestorage.app/o/${encodeURIComponent(
+                        image
+                      )}?alt=media`}
+                      alt={`Image ${index + 1}`}
+                      fill
+                      className="object-cover rounded-md"
+                    />
+                  </div>
                 </CarouselItem>
-              );
-            })}
-          </CarouselContent>
-        </Carousel>
-        {allowEdit && (
-          <Link href={`/edit-post/${postItem.id}`}>
-            <PencilIcon />
-          </Link>
-        )}
+              ))}
+            </CarouselContent>
+          </Carousel>
+        </div>
 
-        <DialogTitle>{postItem.title}</DialogTitle>
-        <DialogDescription>{postItem.description}</DialogDescription>
-        <p>{postItem.country}</p>
+        <div className="flex-1 ml-4 flex flex-col overflow-hidden">
+          <DialogTitle className="flex justify-between">
+            {postItem.title}
+            {allowEdit && (
+              <Link href={`/edit-post/${postItem.id}`}>
+                <PencilIcon />
+              </Link>
+            )}
+          </DialogTitle>
+
+          <div className="text-sm text-muted-foreground">
+            {postItem.country}
+          </div>
+
+          <DialogDescription
+            className="mt-2 flex-1 overflow-y-auto whitespace-pre-wrap pr-2"
+            style={{ scrollbarWidth: "thin" }}
+          >
+            {postItem.description}
+          </DialogDescription>
+        </div>
       </DialogContent>
     </Dialog>
   );
