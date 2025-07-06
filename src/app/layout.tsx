@@ -53,7 +53,7 @@ export default function RootLayout({
               <Link className="px-8 uppercase hover:underline" href="/trend">
                 Trend
               </Link>
-              <Link className="px-8 uppercase hover:underline" href="/foryou">
+              <Link className="px-8 uppercase hover:underline" href="/for-you">
                 For You
               </Link>
               <AuthNavLink />

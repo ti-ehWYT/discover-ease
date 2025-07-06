@@ -8,9 +8,8 @@ export default async function Home() {
     <div className="columns-1 sm:columns-2 md:columns-3 gap-4">
       {data.map((item) => (
         <div key={item.id} className="mb-4 break-inside-avoid">
-           <PostDialog   postItem={item} allowEdit={false} />
-          </div>
-       
+          <PostDialog postItem={item} allowEdit={false} />
+        </div>
       ))}
     </div>
   );
