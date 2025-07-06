@@ -4,5 +4,6 @@ export type Post = {
   title: string;
   country: string;
   images?: string[];
+  tags?: string[];
   authorId?: string;
 };

@@ -3,16 +3,25 @@ import { firestore, auth } from "../firebase/server";
 import { Post } from "../type/post";
 import { cookies } from "next/headers";
 
+
 export const getPosts = async () => {
   const postQuery = firestore.collection("posts").orderBy("created", "desc");
   const snap = await postQuery.get();
-  const posts = snap.docs.map(
-    (doc) =>
-      ({
-        id: doc.id,
-        ...doc.data(),
-      } as Post)
-  );
+
+  const posts: Post[] = snap.docs.map((doc) => {
+    const data = doc.data();
+
+    return {
+      id: doc.id,
+      title: data.title ?? "",
+      description: data.description ?? "",
+      country: data.country ?? "",
+      images: Array.isArray(data.images) ? data.images : [],
+      tags: Array.isArray(data.tags) ? data.tags : [],
+      authorId: data.authorId ?? "",
+    };
+  });
+
   return { data: posts };
 };
 
@@ -23,6 +32,7 @@ export const getAuthorPosts = async () => {
     return { data: [] };
   }
   const verifiedToken = await auth.verifyIdToken(token);
+
   if (!verifiedToken) {
     return { data: [] };
   }

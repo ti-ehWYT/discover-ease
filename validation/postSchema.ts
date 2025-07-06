@@ -5,6 +5,7 @@ export const formDataSchema = z.object({
   description: z
     .string().optional(),
   country: z.string().min(1, "Country must be selected"),
+  tags:z.array(z.string()).min(1, "Select at least 1 tag"),
 });
 
 export const postImagesSchema = z.object({
