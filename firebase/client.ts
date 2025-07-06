@@ -47,4 +47,3 @@ if (!currentApps.length) {
   }
 }
 export { auth, storage, analytics, db };
-// const analytics = getAnalytics(app);
