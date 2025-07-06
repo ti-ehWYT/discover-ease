@@ -22,12 +22,14 @@ type Props = {
   images?: ImageUpload[];
   onImagesChange: (images: ImageUpload[]) => void;
   urlFormatter?: (image: ImageUpload) => string;
+  multiple: boolean;
 };
 
 export default function MultiImageUploader({
   images = [],
   onImagesChange,
   urlFormatter,
+  multiple
 }: Props) {
   const uploadInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -85,7 +87,7 @@ export default function MultiImageUploader({
         className="hidden"
         ref={uploadInputRef}
         type="file"
-        multiple
+        multiple={multiple}
         accept="image/*"
         onChange={handleInputChange}
       />
