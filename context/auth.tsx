@@ -45,13 +45,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           await removeToken();
         }
       }
-
-      if (user && analytics) {
-        logEvent(analytics, "user_login_from", {
-          method: "google",
-          userID: user.uid,
-        });
-      }
     });
 
     return () => {
