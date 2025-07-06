@@ -11,7 +11,7 @@ export default function MyPosts({ data }: {data: Post[]}) {
   const list = data.filter((item) => item.authorId === userId);
   return (
     <div className="columns-1 sm:columns-2 md:columns-3 gap-4">
-      {list.map((post: Post) => {
+      {list.map((post: Post) => { 
         return <PostDialog key={post.id} postItem={post} allowEdit />;
       })}
     </div>

@@ -10,9 +10,6 @@ export const getCurrentUsers = async (uid: string) => {
     return { data: null };
   }
 
-  // 🔥 Convert to plain object
   const userData = snap.data();
-
-  // Optional: remove metadata or convert timestamps if needed
   return { data: JSON.parse(JSON.stringify(userData)) };
 };
