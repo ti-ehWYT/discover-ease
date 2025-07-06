@@ -14,47 +14,59 @@ import { Avatar, AvatarFallback } from "./ui/avatar";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { VscDiffAdded } from "react-icons/vsc";
+import { useEffect, useState } from "react";
+import { fetchUserProfile } from "@/app/my-profile/action";
 
 export default function AuthNavLink() {
   const auth = useAuth();
   const router = useRouter();
+  const uid = auth?.currentUser?.uid;
+  const [userProfile, setUserProfile] = useState<any>(null);
+
+  useEffect(() => {
+    if (!uid) return;
+
+    (async () => {
+      const profile = await fetchUserProfile(uid);
+      setUserProfile(profile);
+    })();
+  }, [uid]);
+
   return (
     <>
-      {!!auth?.currentUser && (
+      {!!userProfile && auth && (
         <>
           {!!auth.customClaims?.admin && (
             <Link className="px-8 uppercase hover:underline" href="/dashboard">
               Dashboard
             </Link>
           )}
-          <Link className="px-4 text-3xl hover:text-green-500" href="/create-post">
+          <Link
+            className="px-4 text-3xl hover:text-green-500"
+            href="/create-post"
+          >
             <VscDiffAdded />
           </Link>
           <DropdownMenu>
             <DropdownMenuTrigger>
               <Avatar>
-                {!!auth.currentUser.photoURL && (
+                {!!userProfile?.photoURL && (
                   <Image
-                    src={auth.currentUser.photoURL}
+                    src={userProfile?.photoURL}
                     alt="avatar"
                     width={70}
                     height={70}
                   />
                 )}
                 <AvatarFallback>
-                  {
-                    (auth.currentUser.displayName ||
-                      auth.currentUser.email)?.[0]
-                  }
+                  {(userProfile?.displayName || userProfile?.email)?.[0]}
                 </AvatarFallback>
               </Avatar>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
               <DropdownMenuLabel>
-                <div>{auth.currentUser.displayName}</div>
-                <div className="font-normal text-xs">
-                  {auth.currentUser.email}
-                </div>
+                <div>{userProfile?.displayName}</div>
+                <div className="font-normal text-xs">{userProfile?.email}</div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem asChild>

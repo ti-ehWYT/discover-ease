@@ -42,7 +42,6 @@ if (!currentApps.length) {
   db = getFirestore(app);
   if (typeof window !== "undefined" && (await isSupported())) {
     console.log("analytic initializing..");
-
     analytics = getAnalytics(app);
   }
 }
