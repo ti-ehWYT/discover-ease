@@ -11,6 +11,7 @@ import { logEvent } from "firebase/analytics";
 import { createContext, useContext, useEffect, useState } from "react";
 import { auth, analytics } from "../firebase/client";
 import { removeToken, setToken } from "./action";
+import { createUserIfNotExists } from "@/lib/createUserIfNotExists";
 
 type AuthContextType = {
   currentUser: User | null;
@@ -68,12 +69,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     provider.setCustomParameters({
       prompt: "select_account", // Always ask the user to choose an account
     });
-    await signInWithPopup(auth, provider);
+    const result = await signInWithPopup(auth, provider);
+    await createUserIfNotExists(result.user, "google");
   };
 
   const signInWithEmail = async (email: string, password: string) => {
     console.log(email, password);
-    await signInWithEmailAndPassword(auth, email, password);
+    const result = await signInWithEmailAndPassword(auth, email, password);
+    await createUserIfNotExists(result.user, "email");
   };
 
   return (

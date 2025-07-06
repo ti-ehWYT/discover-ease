@@ -291,6 +291,7 @@ export default function PostForm({
                       }
                       return image.url;
                     }}
+                    multiple={true}
                   />
                 </FormControl>
                 <FormMessage />

@@ -1,9 +1,5 @@
-import MyPosts from "./my-posts";
+import MyProfileClient from "./my-profile-client";
 
-export default function MyProfile() {
-  return (
-    <div>
-      <MyPosts />
-    </div>
-  );
+export default function MyProfilePage() {
+  return <MyProfileClient />;
 }
