@@ -336,10 +336,13 @@ export default function PostForm({
                     <Button
                       variant="outline"
                       role="combobox"
-                      className={`w-full justify-between
-                        ${!field.value?.length!} && "text-muted-foreground`}
+                      className={`w-full justify-between ${
+                        !Array.isArray(field.value) || field.value.length === 0
+                          ? "text-muted-foreground"
+                          : ""
+                      }`}
                     >
-                      {field.value?.length!
+                      {Array.isArray(field.value) && field.value.length > 0
                         ? field.value.join(", ")
                         : "Select tags"}
                     </Button>

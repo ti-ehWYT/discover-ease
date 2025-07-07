@@ -87,7 +87,7 @@ export default function EditPostForm({
           title,
           description,
           country,
-          tags: tags.map((item) => item),
+          tags: tags,
           images: images.map((image) => ({
             id: image,
             url: image,
