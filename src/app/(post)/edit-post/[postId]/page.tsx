@@ -18,6 +18,7 @@ export default async function EditPost({ params }: { params: Promise<any> }) {
           title={post.title}
           description={post.description}
           country={post.country}
+          tags={post.tags}
           images={post.images || []}
         />
       </CardContent>

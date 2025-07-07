@@ -21,7 +21,6 @@ export default function MyProfileClient() {
         fetchUserProfile(uid),
         fetchUserPosts(uid),
       ]);
-
       setUserProfile(profile);
       setPosts(userPosts);
     })();
@@ -31,10 +30,12 @@ export default function MyProfileClient() {
 
   return (
     <div className="p-4">
-      <h2 className="text-xl font-semibold mb-2">Welcome, {userProfile?.displayName || userProfile?.email}</h2>
+      <h2 className="text-xl font-semibold mb-2">
+        Welcome, {userProfile?.displayName || userProfile?.email}
+      </h2>
       <div className="columns-1 sm:columns-2 md:columns-3 gap-4">
-        {posts.map((post) => (
-          <PostDialog key={post.id} postItem={post} allowEdit />
+        {posts.map((post, index) => (
+          <PostDialog key={post.id || index} postItem={post} allowEdit />
         ))}
       </div>
     </div>

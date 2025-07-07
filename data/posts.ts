@@ -33,9 +33,8 @@ export const getAuthorPosts = async (uid: string) => {
 
   const posts: Post[] = snap.docs.map((doc) => {
     const data = doc.data();
-
     return {
-      id: data.id,
+      id: doc.id,
       description: data.description,
       title: data.title,
       country: data.country,
