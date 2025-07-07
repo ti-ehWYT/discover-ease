@@ -34,7 +34,7 @@ export default function AuthNavLink() {
 
   return (
     <>
-      {!!userProfile && auth && (
+      {!!userProfile && auth?.currentUser && (
         <>
           {!!auth.customClaims?.admin && (
             <Link className="px-8 uppercase hover:underline" href="/dashboard">
