@@ -23,6 +23,14 @@ type AuthContextType = {
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
+function getTimeOfDay(): "morning" | "afternoon" | "evening" | "night" {
+  const hour = new Date().getHours();
+  if (hour >= 5 && hour < 12) return "morning";
+  if (hour >= 12 && hour < 17) return "afternoon";
+  if (hour >= 17 && hour < 21) return "evening";
+  return "night";
+}
+
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [customClaims, setCustomClaims] = useState<ParsedToken | null>(null);
@@ -64,12 +72,25 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     });
     const result = await signInWithPopup(auth, provider);
     await createUserIfNotExists(result.user, "google");
+    if (analytics) {
+      logEvent(analytics, "login", {
+        method: "google",
+        time_of_day: getTimeOfDay(),
+      });
+    }
   };
 
   const signInWithEmail = async (email: string, password: string) => {
     console.log(email, password);
     const result = await signInWithEmailAndPassword(auth, email, password);
     await createUserIfNotExists(result.user, "email");
+
+    if (analytics) {
+      logEvent(analytics, "login", {
+        method: "email",
+        time_of_day: getTimeOfDay(),
+      });
+    }
   };
 
   return (
