@@ -4,7 +4,7 @@ import { getAuthorPosts } from "../../../data/posts";
 import { getCurrentUsers } from "../../../data/users";
 
 export async function fetchUserPosts(uid: string) {
-    const { data } = await getAuthorPosts(uid);
+  const { data } = await getAuthorPosts(uid);
   return data;
 }
 
