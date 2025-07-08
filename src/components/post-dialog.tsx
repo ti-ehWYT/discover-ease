@@ -11,7 +11,7 @@ import {
 } from "./ui/dialog";
 import Link from "next/link";
 import Image from "next/image";
-import { Carousel, CarouselContent, CarouselItem } from "./ui/carousel";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, } from "./ui/carousel";
 
 export default function PostDialog({
   postItem,
@@ -51,23 +51,32 @@ export default function PostDialog({
         style={{ minWidth: "60vw" }}
       >
         <div className="flex-1">
-          <Carousel>
-            <CarouselContent>
-              {postItem.images?.map((image, index) => (
-                <CarouselItem key={image}>
-                  <div className="rounded-md relative h-[70vh] min-h-80">
-                    <Image
-                      src={`https://firebasestorage.googleapis.com/v0/b/discover-ease-ee29d.firebasestorage.app/o/${encodeURIComponent(
-                        image
-                      )}?alt=media`}
-                      alt={`Image ${index + 1}`}
-                      fill
-                      className="object-cover rounded-md"
-                    />
-                  </div>
-                </CarouselItem>
-              ))}
-            </CarouselContent>
+          <Carousel className="relative">
+            <div className="relative">
+              {postItem.images && postItem.images.length > 1 && (
+                <>
+                  <CarouselPrevious className="absolute left-2 top-1/2 z-10 -translate-y-1/2 bg-white/80 hover:bg-white rounded-full shadow" />
+                  <CarouselNext className="absolute right-2 top-1/2 z-10 -translate-y-1/2 bg-white/80 hover:bg-white rounded-full shadow" />
+                </>
+              )}
+              <CarouselContent>
+                {postItem.images?.map((image, index) => (
+                  <CarouselItem key={image}>
+                    <div className="rounded-md relative h-[70vh] min-h-80">
+                      <Image
+                        src={`https://firebasestorage.googleapis.com/v0/b/discover-ease-ee29d.firebasestorage.app/o/${encodeURIComponent(
+                          image
+                        )}?alt=media`}
+                        alt={`Image ${index + 1}`}
+                        fill
+                        className="object-cover rounded-md"
+                      />
+                    </div>
+
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+            </div>
           </Carousel>
         </div>
 
