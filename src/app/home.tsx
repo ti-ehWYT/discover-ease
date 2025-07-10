@@ -3,24 +3,22 @@
 import { useState } from "react";
 import { Post } from "../../type/post";
 import PostDialog from "@/components/post-dialog";
-import SearchBar from "@/components/searchBar";
+import SearchBar from "@/components/search-bar";
+import { incrementCountrySearch } from "../../data/trend";
 
-export default function Search({ initialPosts }: { initialPosts: Post[] }) {
+
+export default function HomePage({ initialPosts }: { initialPosts: Post[] }) {
   const [filteredPosts, setFilteredPosts] = useState<Post[]>(initialPosts);
-
-  const handleSearch = (query: string) => {
+  const handleSearch = async (query: string) => {
     if (!query) {
       setFilteredPosts(initialPosts);
       return;
     }
-
+    await incrementCountrySearch(query.trim());
     const lowerQuery = query.toLowerCase();
 
-    const results = initialPosts.filter(
-      (post) =>
-        post.title.toLowerCase().includes(lowerQuery) ||
-        post.description?.toLowerCase().includes(lowerQuery) ||
-        post.country.toLowerCase().includes(lowerQuery)
+    const results = initialPosts.filter((post) =>
+      post.country.toLowerCase().includes(lowerQuery)
     );
 
     setFilteredPosts(results);
