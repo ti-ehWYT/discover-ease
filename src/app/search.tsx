@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Post } from "../../type/post";
 import PostDialog from "@/components/post-dialog";
-import SearchBar from "@/components/ui/searchBar";
+import SearchBar from "@/components/searchBar";
 
 export default function Search({ initialPosts }: { initialPosts: Post[] }) {
   const [filteredPosts, setFilteredPosts] = useState<Post[]>(initialPosts);
