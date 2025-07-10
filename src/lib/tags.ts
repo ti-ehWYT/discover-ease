@@ -1,0 +1,18 @@
+export const tagOptions = [
+  "Beach",
+  "Mountain",
+  "Relax",
+  "Adventurous",
+  "Reading",
+  "Outdoor",
+  "Cafe",
+  "Hiking",
+  "Quiet",
+  "Happening",
+  "Peaceful",
+  "Energetic",
+  "Fine dining",
+  "Street food",
+  "Beautiful view",
+  "Activities",
+];

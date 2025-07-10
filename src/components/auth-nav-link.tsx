@@ -41,12 +41,20 @@ export default function AuthNavLink() {
               Dashboard
             </Link>
           )}
-          <Link
-            className="px-4 text-3xl hover:text-green-500"
-            href="/create-post"
-          >
-            <VscDiffAdded />
-          </Link>
+          <DropdownMenu>
+            <DropdownMenuTrigger className="px-4 text-3xl">
+              <VscDiffAdded />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem asChild>
+                <Link href="/create-post">New Post</Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href="/create-itinenary">New Itinerary</Link>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
           <DropdownMenu>
             <DropdownMenuTrigger>
               <Avatar>
