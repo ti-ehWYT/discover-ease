@@ -61,7 +61,7 @@ export default function NewPostForm() {
     await savePostImages({ postId: response.postId, images: paths }, token);
     if (analytics) {
       logEvent(analytics, "post_created", {
-        country: data.country, // where the user is posting from
+        created_post_country: data.country, // where the user is posting from
         tag_count: data.tags?.length || 0, // how many tags
         has_images: images.length > 0, // whether post has images
         title_length: data.title.length, // optional: length of title
