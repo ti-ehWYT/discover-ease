@@ -1,10 +1,9 @@
 import { getPosts } from "../../data/posts";
-import PostDialog from "@/components/post-dialog";
-import Search from "./search";
+import HomePage from "./home";
 
 export default async function Home() {
   const { data } = await getPosts();
-  return <Search initialPosts={data} />;
+  return <HomePage initialPosts={data} />;
 
 
 }
