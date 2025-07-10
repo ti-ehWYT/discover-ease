@@ -81,7 +81,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const signInWithEmail = async (email: string, password: string) => {
-    console.log(email, password);
     const result = await signInWithEmailAndPassword(auth, email, password);
     await createUserIfNotExists(result.user, "email");
 
