@@ -8,7 +8,7 @@ export default async function EditPost({ params }: { params: Promise<any> }) {
   const post = await getPostById(paramsValue.postId);
 
   return (
-    <Card className="w-full max-w-sm">
+    <Card className="w-full max-w-4xl mx-auto">
       <CardHeader>
         <CardTitle>Edit Post</CardTitle>
       </CardHeader>

@@ -23,7 +23,7 @@ export function TagMultiSelect({ control, name }: TagMultiSelectProps) {
               <Button
                 variant="outline"
                 role="combobox"
-                className={`w-full justify-between ${
+                className={`w-[250px] justify-between ${
                   !Array.isArray(field.value) || field.value.length === 0
                     ? "text-muted-foreground"
                     : ""
@@ -34,7 +34,7 @@ export function TagMultiSelect({ control, name }: TagMultiSelectProps) {
                   : "Select tags"}
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-full max-h-[200px] overflow-y-auto">
+            <PopoverContent className="w-[250px] max-h-[200px] overflow-y-auto">
               <div className="flex flex-col space-y-2">
                 {tagOptions.map((tag) => (
                   <div key={tag} className="flex items-center space-x-2">

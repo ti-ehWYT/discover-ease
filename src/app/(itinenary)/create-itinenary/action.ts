@@ -1,9 +1,9 @@
 "use server";
 
 import { auth, firestore } from "../../../../firebase/server";
-import { itinerarySchema } from "../../../../validation/itinerarySchema";
+import { itinenarySchema } from "../../../../validation/itinenarySchema";
 
-export const saveNewItinerary = async (data: any) => {
+export const saveNewitinenary = async (data: any) => {
   const { token, ...formData } = data;
 
   const verifiedToken = await auth.verifyIdToken(token);
@@ -11,7 +11,7 @@ export const saveNewItinerary = async (data: any) => {
     return { error: true, message: "Unauthorized" };
   }
 
-  const validation = itinerarySchema.safeParse({ ...formData, itinerary: [] });
+  const validation = itinenarySchema.safeParse({ ...formData, itinenary: [] });
   if (!validation.success) {
     return {
       error: true,
@@ -19,12 +19,12 @@ export const saveNewItinerary = async (data: any) => {
     };
   }
 
-  const itineraryDoc = await firestore.collection("itineraries").add({
+  const itinenaryDoc = await firestore.collection("itineraries").add({
     ...formData,
     created: new Date(),
     updated: new Date(),
     authorId: verifiedToken.uid,
   });
 
-  return { itineraryId: itineraryDoc.id };
+  return { itinenaryId: itinenaryDoc.id };
 }

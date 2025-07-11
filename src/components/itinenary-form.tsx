@@ -2,7 +2,7 @@
 
 import React from "react";
 import { z } from "zod";
-import { itinerarySchema } from "../../validation/itinerarySchema";
+import { itinenarySchema } from "../../validation/itinenarySchema";
 import {
   Form,
   FormControl,
@@ -14,33 +14,32 @@ import {
 import { Input } from "./ui/input";
 import { TagMultiSelect } from "./tags-select";
 import { CountrySelect } from "./country-select";
-import { Textarea } from "./ui/textarea";
 import { Button } from "./ui/button";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import MultiImageUploader, { ImageUpload } from "./multi-image-uploader";
+import DescriptionInput from "./description-input";
 
 type Props = {
   submitButtonLabel: React.ReactNode;
-  handleSubmit: (data: z.infer<typeof itinerarySchema>) => void;
-  defaultValues?: z.infer<typeof itinerarySchema>;
+  handleSubmit: (data: z.infer<typeof itinenarySchema>) => void;
+  defaultValues?: z.infer<typeof itinenarySchema>;
 };
 
-export default function ItineraryForm({
+export default function itinenaryForm({
   handleSubmit,
   submitButtonLabel,
   defaultValues,
 }: Props) {
-  const combinedDefaultValues: z.infer<typeof itinerarySchema> = {
+  const combinedDefaultValues: z.infer<typeof itinenarySchema> = {
     ...{
       title: "",
       description: "",
       country: "",
       tags: [],
       coverImage: [],
-      itinerary: [
+      itinenary: [
         {
-          id: crypto.randomUUID(),
           day: 1,
           images: [],
           activity: [""],
@@ -49,8 +48,8 @@ export default function ItineraryForm({
     },
     ...defaultValues,
   };
-  const form = useForm<z.infer<typeof itinerarySchema>>({
-    resolver: zodResolver(itinerarySchema),
+  const form = useForm<z.infer<typeof itinenarySchema>>({
+    resolver: zodResolver(itinenarySchema),
     defaultValues: combinedDefaultValues,
   });
 
@@ -103,7 +102,10 @@ export default function ItineraryForm({
             <FormItem className="py-3">
               <FormLabel>Description</FormLabel>
               <FormControl>
-                <Textarea {...field} rows={5} className="resize-none" />
+                <DescriptionInput
+                  value={field.value ?? ""}
+                  onChange={field.onChange}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -111,14 +113,29 @@ export default function ItineraryForm({
         />
         <TagMultiSelect control={form.control} name="tags" />
         <CountrySelect control={form.control} name="country" />
-        {form.watch("itinerary").map((item, index) => (
-          <div key={item.id} className="border p-4 my-4 rounded-lg space-y-4">
-            <h3 className="text-lg font-bold">Day {index + 1}</h3>
-
+        {form.watch("itinenary").map((item, index) => (
+          <div key={index} className="border p-4 my-4 rounded-lg space-y-4">
+            <div className="flex justify-between items-center">
+              <h3 className="text-lg font-bold">Day {index + 1}</h3>
+              {form.watch("itinenary").length > 1 && (
+                <Button
+                  type="button"
+                  variant="destructive"
+                  size="sm"
+                  onClick={() => {
+                    const current = form.getValues("itinenary");
+                    const updated = current.filter((_, i) => i !== index);
+                    form.setValue("itinenary", updated);
+                  }}
+                >
+                  Remove Day
+                </Button>
+              )}
+            </div>
             {/* Images for the day */}
             <FormField
               control={form.control}
-              name={`itinerary.${index}.images`}
+              name={`itinenary.${index}.images`}
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Images</FormLabel>
@@ -126,7 +143,7 @@ export default function ItineraryForm({
                     <MultiImageUploader
                       images={field.value}
                       onImagesChange={(images: ImageUpload[]) => {
-                        form.setValue(`itinerary.${index}.images`, images);
+                        form.setValue(`itinenary.${index}.images`, images);
                       }}
                       urlFormatter={(image) => {
                         if (!image.file) {
@@ -147,7 +164,7 @@ export default function ItineraryForm({
             {/* Activities */}
             <FormField
               control={form.control}
-              name={`itinerary.${index}.activity`}
+              name={`itinenary.${index}.activity`}
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Activities</FormLabel>
@@ -206,11 +223,10 @@ export default function ItineraryForm({
           variant="outline"
           className="my-4"
           onClick={() => {
-            const current = form.getValues("itinerary");
-            form.setValue("itinerary", [
+            const current = form.getValues("itinenary");
+            form.setValue("itinenary", [
               ...current,
               {
-                id: crypto.randomUUID(),
                 day: current.length + 1,
                 images: [],
                 activity: [""],

@@ -6,18 +6,17 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import NewItineraryForm from "./new-itinerary-form";
+import NewitinenaryForm from "./new-itinenary-form";
 
-export default function CreateItinerary() {
+export default function Createitinenary() {
   return (
-    <Card className="w-full max-w-sm">
+    <Card className="w-full max-w-4xl mx-auto">
       <CardHeader>
-        <CardTitle>Create Itinerary</CardTitle>
+        <CardTitle>Create itinenary</CardTitle>
       </CardHeader>
       <CardContent>
-        <NewItineraryForm />
+        <NewitinenaryForm />
       </CardContent>
-      <CardFooter className="flex-col gap-2"></CardFooter>
     </Card>
   );
 }

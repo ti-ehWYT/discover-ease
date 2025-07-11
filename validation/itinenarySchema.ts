@@ -15,9 +15,8 @@ export const formDataSchema = z.object({
 });
 
 export const activitySchema = z.object({
-  itinerary: z.array(
+  itinenary: z.array(
     z.object({
-      id: z.string(),
       day: z.number(),
       images: z.array(
         z.object({
@@ -33,4 +32,4 @@ export const activitySchema = z.object({
   ),
 });
 
-export const itinerarySchema = formDataSchema.and(activitySchema)
+export const itinenarySchema = formDataSchema.and(activitySchema)
