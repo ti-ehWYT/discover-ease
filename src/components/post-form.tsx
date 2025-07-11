@@ -18,6 +18,7 @@ import { Button } from "./ui/button";
 import MultiImageUploader, { ImageUpload } from "./multi-image-uploader";
 import { CountrySelect } from "./country-select";
 import { TagMultiSelect } from "./tags-select";
+import DescriptionInput from "./description-input";
 
 type Props = {
   submitButtonLabel: React.ReactNode;
@@ -46,7 +47,10 @@ export default function PostForm({
   });
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)}>
+      <form
+        onSubmit={form.handleSubmit(handleSubmit)}
+        className="w-full max-w-4xl mx-auto"
+      >
         <fieldset disabled={form.formState.isSubmitting}>
           <FormField
             control={form.control}
@@ -94,14 +98,17 @@ export default function PostForm({
               <FormItem className="py-3">
                 <FormLabel>Description</FormLabel>
                 <FormControl>
-                  <Textarea {...field} rows={5} className="resize-none" />
+                  <DescriptionInput
+                    value={field.value ?? ""}
+                    onChange={field.onChange}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
           <TagMultiSelect control={form.control} name="tags" />
-          <CountrySelect control={form.control} name="country"/>
+          <CountrySelect control={form.control} name="country" />
         </fieldset>
         <Button type="submit" disabled={form.formState.isSubmitting}>
           {submitButtonLabel}

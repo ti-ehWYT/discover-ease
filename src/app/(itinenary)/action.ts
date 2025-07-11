@@ -3,13 +3,20 @@
 import { auth, firestore } from "../../../firebase/server";
 import { z } from "zod";
 
-export const saveItineraryImages = async (
+export const saveItinenaryImages = async (
   {
-    itineraryId,
+    itinenaryId,
     images,
   }: {
-    itineraryId: string;
-    images: Record<string, string[]>;
+    itinenaryId: string;
+    images: {
+      coverImage: string[];
+      itinenary: {
+        day: number;
+        activity: string[];
+        images: string[];
+      }[];
+    };
   },
   token: string
 ) => {
@@ -22,11 +29,20 @@ export const saveItineraryImages = async (
   }
 
   const schema = z.object({
-    itineraryId: z.string(),
-    images: z.record(z.array(z.string())),
+    itinenaryId: z.string(),
+    images: z.object({
+      coverImage: z.array(z.string()),
+      itinenary: z.array(
+        z.object({
+          day: z.number(),
+          activity: z.array(z.string()),
+          images: z.array(z.string()),
+        })
+      ),
+    }),
   });
 
-  const validation = schema.safeParse({ itineraryId, images });
+  const validation = schema.safeParse({ itinenaryId, images });
   if (!validation.success) {
     return {
       error: true,
@@ -34,7 +50,12 @@ export const saveItineraryImages = async (
     };
   }
 
-  await firestore.collection("itineraries").doc(itineraryId).update({
-    itineraryImages: images,
+  await firestore.collection("itineraries").doc(itinenaryId).update({
+    coverImage: images.coverImage,
+    itinenary: images.itinenary,
   });
-};
+
+  return {
+    success: true,
+  };
+};  

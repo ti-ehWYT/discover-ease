@@ -10,7 +10,7 @@ import {
   DropResult,
 } from "@hello-pangea/dnd";
 import Image from "next/image";
-import { MoveIcon, XIcon } from "lucide-react";
+import { MoveIcon, XIcon, PlusIcon } from "lucide-react";
 
 export type ImageUpload = {
   id: string;
@@ -29,7 +29,7 @@ export default function MultiImageUploader({
   images = [],
   onImagesChange,
   urlFormatter,
-  multiple
+  multiple,
 }: Props) {
   const uploadInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -97,7 +97,7 @@ export default function MultiImageUploader({
         type="button"
         onClick={() => uploadInputRef?.current?.click()}
       >
-        Upload images
+        Upload Image<PlusIcon />
       </Button>
       <DragDropContext onDragEnd={handleDragEnd}>
         <Droppable droppableId="property-images" direction="vertical">

@@ -75,7 +75,7 @@ export default function EditPostForm({
     router.push("/my-profile");
   };
   return (
-    <div>
+    <div className="w-full max-w-4xl mx-auto">
       <PostForm
         handleSubmit={handleSubmit}
         submitButtonLabel={
