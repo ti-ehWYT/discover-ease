@@ -3,7 +3,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "./ui/button";
 import { useAuth } from "../../context/auth";
 
-export default function GoogleLoginButton() {
+export default function GoogleLoginButton({buttonLabel} : {buttonLabel: string}) {
   const auth = useAuth();
   const router = useRouter();
   return (
@@ -17,7 +17,7 @@ export default function GoogleLoginButton() {
       variant="outline"
       className="w-full"
     >
-      Login with Google
+      {buttonLabel}
     </Button>
   );
 }

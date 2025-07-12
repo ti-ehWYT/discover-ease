@@ -1,6 +1,12 @@
 import "server-only";
-import { firestore, auth } from "../firebase/server";
+import { firestore } from "../firebase/server";
 import { Post } from "../type/post";
+type LikesByCountryDate = {
+  [date: string]: {
+    [country: string]: number;
+  };
+};
+
 
 export const getPosts = async () => {
   const postQuery = firestore.collection("posts").orderBy("created", "desc");
@@ -17,6 +23,7 @@ export const getPosts = async () => {
       images: Array.isArray(data.images) ? data.images : [],
       tags: Array.isArray(data.tags) ? data.tags : [],
       authorId: data.authorId ?? "",
+      likeCount: data.likeCount ?? 0,
     };
   });
 
@@ -41,6 +48,7 @@ export const getAuthorPosts = async (uid: string) => {
       images: data.images,
       tags: data.tags,
       authorId: data.authorId,
+      likeCount: data.likeCount,
     };
   });
 
@@ -54,4 +62,71 @@ export const getPostById = async (postId: string) => {
     ...postSnapshot.data(),
   } as Post;
   return postData;
+};
+
+
+export const getTopPosts = async (limitCount: number = 3) => {
+  const snap = await firestore
+    .collection("posts")
+    .orderBy("likeCount", "desc")
+    .limit(limitCount)
+    .get();
+
+  const posts: Post[] = snap.docs.map((doc) => {
+    const data = doc.data();
+    return {
+      id: doc.id,
+      title: data.title ?? "",
+      description: data.description ?? "",
+      country: data.country ?? "",
+      images: Array.isArray(data.images) ? data.images : [],
+      tags: Array.isArray(data.tags) ? data.tags : [],
+      authorId: data.authorId ?? "",
+      likeCount: data.likeCount ?? 0,
+    };
+  });
+
+  return { data: posts };
+};
+
+export const getLikesOverTimeByCountry = async () => {
+  const postsSnap = await firestore.collection("posts").get();
+
+  const grouped: LikesByCountryDate = {};
+
+  for (const postDoc of postsSnap.docs) {
+    const postData = postDoc.data();
+    const country = postData.country ?? "Unknown";
+    const postId = postDoc.id;
+
+    const likesSnap = await firestore
+      .collection("posts")
+      .doc(postId)
+      .collection("likes")
+      .get();
+
+    likesSnap.forEach((likeDoc) => {
+      const data = likeDoc.data();
+      const likedAt = data.likedAt;
+
+      if (!likedAt) return;
+
+      const date = new Date(likedAt).toISOString().split("T")[0]; // "YYYY-MM-DD"
+
+      if (!grouped[date]) grouped[date] = {};
+      if (!grouped[date][country]) grouped[date][country] = 0;
+
+      grouped[date][country]++;
+    });
+  }
+
+  // Convert to chart format
+  const chartData = Object.entries(grouped)
+    .sort(([a], [b]) => (a > b ? 1 : -1))
+    .map(([date, countries]) => ({
+      date,
+      ...countries,
+    }));
+
+  return chartData;
 };

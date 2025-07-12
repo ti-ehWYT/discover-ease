@@ -1,18 +1,36 @@
-import { PencilIcon } from "lucide-react";
+"use client";
+
+import { HeartIcon, PencilIcon } from "lucide-react";
 import { Post } from "../../type/post";
-import { Card, CardContent, CardHeader } from "./ui/card";
+import { Card, CardContent, CardFooter, CardHeader } from "./ui/card";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "./ui/dialog";
 import Link from "next/link";
 import Image from "next/image";
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, } from "./ui/carousel";
-
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "./ui/carousel";
+import { Badge } from "./ui/badge";
+import clsx from "clsx";
+import { useEffect, useState } from "react";
+import {
+  doc,
+  getDoc,
+  setDoc,
+  deleteDoc,
+  updateDoc,
+  increment,
+} from "firebase/firestore";
+import { auth, db } from "../../firebase/client";
 export default function PostDialog({
   postItem,
   allowEdit = false,
@@ -20,6 +38,47 @@ export default function PostDialog({
   postItem: Post;
   allowEdit: boolean;
 }) {
+  const [liked, setLiked] = useState(false);
+  const [likeCount, setLikeCount] = useState(postItem.likeCount ?? 0);
+  const user = auth.currentUser;
+
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged(async (user) => {
+      if (!user) {
+        setLiked(false);
+        return;
+      }
+
+      const likeDoc = await getDoc(
+        doc(db, "posts", postItem.id, "likes", user.uid)
+      );
+      setLiked(likeDoc.exists());
+    });
+
+    return () => unsubscribe();
+  }, [postItem.id]);
+
+  const toggleLike = async () => {
+    if (!user) return;
+
+    const likeRef = doc(db, "posts", postItem.id, "likes", user.uid);
+    const postRef = doc(db, "posts", postItem.id);
+
+    if (liked) {
+      // Unlike
+      await deleteDoc(likeRef);
+      await updateDoc(postRef, { likeCount: increment(-1) });
+      setLikeCount((prev) => prev - 1);
+      setLiked(false);
+    } else {
+      // Like
+      await setDoc(likeRef, { likedAt: Date.now() });
+      await updateDoc(postRef, { likeCount: increment(1) });
+      setLikeCount((prev) => prev + 1);
+      setLiked(true);
+    }
+  };
+
   return (
     <Dialog key={postItem.id}>
       <DialogTrigger asChild>
@@ -43,6 +102,18 @@ export default function PostDialog({
           <CardContent>
             <h2 className="text-lg font-semibold">{postItem.title}</h2>
           </CardContent>
+          <CardFooter>
+            {postItem.tags?.length! > 0 &&
+              postItem.tags?.slice(0, 3).map((tag, index) => (
+                <Badge
+                  variant="secondary"
+                  className="bg-blue-500 text-white dark:bg-blue-600 mr-1"
+                  key={index}
+                >
+                  {tag}
+                </Badge>
+              ))}
+          </CardFooter>
         </Card>
       </DialogTrigger>
 
@@ -72,7 +143,6 @@ export default function PostDialog({
                         className="object-cover rounded-md"
                       />
                     </div>
-
                   </CarouselItem>
                 ))}
               </CarouselContent>
@@ -93,10 +163,27 @@ export default function PostDialog({
           <div className="text-sm text-muted-foreground">
             {postItem.country}
           </div>
+          <div className="flex items-center">
+            <button
+              onClick={() => toggleLike()}
+              className="focus:outline-none"
+              title={"Like"}
+            >
+              <HeartIcon
+                className={clsx(
+                  "w-5 h-5 transition-colors",
+                  liked ? "fill-red-500 text-red-500" : "text-gray-400"
+                )}
+              />
+            </button>
+            <span className="text-xs font-medium text-gray-500">
+              {likeCount}
+            </span>
+          </div>
 
           <DialogDescription
             className="mt-2 flex-1 overflow-y-auto whitespace-pre-wrap pr-2"
-            style={{ scrollbarWidth: "thin" }}
+            style={{ scrollbarWidth: "none" }}
           >
             {postItem.description}
           </DialogDescription>

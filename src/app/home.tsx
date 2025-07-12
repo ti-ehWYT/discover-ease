@@ -34,7 +34,7 @@ export default function HomePage({ initialPosts }: { initialPosts: Post[] }) {
           </div>
         ))}
         {filteredPosts.length === 0 && (
-          <div className="text-center w-full col-span-3 text-muted-foreground py-10">
+          <div className="columns-1 sm:columns-2 md:columns-3 gap-4">
             No revelant posts found.
           </div>
         )}
