@@ -13,19 +13,6 @@ export async function middleware(request: NextRequest) {
 
   if (
     !token &&
-    (pathname.startsWith("/login") || pathname.startsWith("/register"))
-  ) {
-    return NextResponse.next();
-  }
-  if (
-    token &&
-    (pathname.startsWith("/login") || pathname.startsWith("/register"))
-  ) {
-    return NextResponse.redirect(new URL("/", request.url));
-  }
-
-  if (
-    !token &&
     (pathname.startsWith("/create-post") ||
       pathname.startsWith("/edit-post") ||
       pathname.startsWith("/my-profile"))
@@ -51,7 +38,5 @@ export const config = {
     "/create-post",
     "/edit-post/:path*",
     "/my-profile",
-    "/login",
-    "/register",
   ],
 };

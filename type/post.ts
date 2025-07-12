@@ -6,4 +6,5 @@ export type Post = {
   images?: string[];
   tags?: string[];
   authorId?: string;
+  likeCount?: number;
 };

@@ -16,6 +16,7 @@ import { useRouter } from "next/navigation";
 import { VscDiffAdded } from "react-icons/vsc";
 import { useEffect, useState } from "react";
 import { fetchUserProfile } from "@/app/my-profile/action";
+import LoginRegisterDialog from "./login-register-dialog";
 
 export default function AuthNavLink() {
   const auth = useAuth();
@@ -92,16 +93,7 @@ export default function AuthNavLink() {
           </DropdownMenu>
         </>
       )}
-      {!auth?.currentUser && (
-        <>
-          <Link className="px-8 uppercase hover:underline" href="/login">
-            Login
-          </Link>
-          <Link className="px-8 uppercase hover:underline" href="/register">
-            Register
-          </Link>
-        </>
-      )}
+      {!auth?.currentUser && <LoginRegisterDialog />}
     </>
   );
 }

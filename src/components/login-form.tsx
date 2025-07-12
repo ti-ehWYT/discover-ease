@@ -7,12 +7,12 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
-import { useAuth } from "../../../../context/auth";
+import { useAuth } from "../../context/auth";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { passwordValidation } from "../../../../validation/registerUser";
+import { passwordValidation } from "../../validation/registerUser";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import GoogleLoginButton from "@/components/google-login-button";
@@ -76,7 +76,11 @@ export default function LoginForm() {
                 return (
                   <FormItem>
                     <FormControl>
-                      <Input {...field} placeholder="Password" type="password" />
+                      <Input
+                        {...field}
+                        placeholder="Password"
+                        type="password"
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -86,11 +90,12 @@ export default function LoginForm() {
             <Button type="submit" className="w-full">
               Login
             </Button>
-            <div className="text-center">or</div>
           </fieldset>
         </form>
       </Form>
-      <GoogleLoginButton />
+      <div className="text-center">or</div>
+
+      <GoogleLoginButton buttonLabel="Login with Google"/>
     </div>
   );
 }
