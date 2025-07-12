@@ -29,6 +29,10 @@ import {
   deleteDoc,
   updateDoc,
   increment,
+  addDoc,
+  collection,
+  onSnapshot,
+  serverTimestamp,
 } from "firebase/firestore";
 import { auth, db } from "../../firebase/client";
 import LoginRegisterDialog from "./login-register-dialog";
@@ -39,6 +43,16 @@ export default function PostDialog({
   postItem: Post;
   allowEdit: boolean;
 }) {
+  const [comments, setComments] = useState<
+    {
+      id: string;
+      text: string;
+      userId: string;
+      userName: string;
+      createdAt: any;
+    }[]
+  >([]);
+  const [newComment, setNewComment] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(postItem.likeCount ?? 0);
@@ -59,6 +73,31 @@ export default function PostDialog({
 
     return () => unsubscribe();
   }, [postItem.id]);
+
+  useEffect(() => {
+    const commentsRef = collection(db, "posts", postItem.id, "comments");
+    const unsubscribe = onSnapshot(commentsRef, (snapshot) => {
+      const commentData = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      })) as typeof comments;
+      setComments(
+        commentData.sort((a, b) => b.createdAt?.seconds - a.createdAt?.seconds)
+      );
+    });
+
+    return () => unsubscribe();
+  }, [postItem.id]);
+
+  useEffect(() => {
+    if (isOpen) {
+      const incrementView = async () => {
+        const postRef = doc(db, "posts", postItem.id);
+        await updateDoc(postRef, { viewCount: increment(1) });
+      };
+      incrementView();
+    }
+  }, [isOpen, postItem.id]);
 
   const toggleLike = async () => {
     if (!user) return;
@@ -81,16 +120,26 @@ export default function PostDialog({
     }
   };
 
-  useEffect(() => {
-    if (isOpen) {
-      const incrementView = async () => {
-        const postRef = doc(db, "posts", postItem.id);
-        await updateDoc(postRef, { viewCount: increment(1) });
-      };
-      incrementView();
-    }
-  }, [isOpen, postItem.id]);
+  const handleCommentSubmit = async () => {
+    if (!user || !newComment.trim()) return;
 
+    const commentRef = collection(db, "posts", postItem.id, "comments");
+    await addDoc(commentRef, {
+      text: newComment.trim(),
+      userId: user.uid,
+      userName: user.displayName || "Anonymous",
+      createdAt: serverTimestamp(),
+    });
+
+    setNewComment("");
+  };
+
+  const handleDeleteComment = async (commentId: string) => {
+    if (!user) return;
+
+    const commentRef = doc(db, "posts", postItem.id, "comments", commentId);
+    await deleteDoc(commentRef);
+  };
   return (
     <Dialog key={postItem.id} onOpenChange={(open) => setIsOpen(open)}>
       <DialogTrigger asChild>
@@ -216,6 +265,60 @@ export default function PostDialog({
           >
             {postItem.description}
           </DialogDescription>
+          <div className="mt-4 border-t pt-4">
+            <h3 className="text-sm font-semibold mb-2">Comments</h3>
+
+            <div className="space-y-2 max-h-40 overflow-y-auto pr-1">
+              {comments.map((comment) => (
+                <div
+                  key={comment.id}
+                  className="text-sm flex justify-between items-center"
+                >
+                  <div>
+                    <span className="font-medium">{comment.userName}</span>:{" "}
+                    <span>{comment.text}</span>
+                  </div>
+                  {user?.uid === comment.userId && (
+                    <button
+                      onClick={() => handleDeleteComment(comment.id)}
+                      className="text-xs text-red-500 ml-2 hover:underline"
+                    >
+                      Delete
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+
+            {user ? (
+              <div className="mt-2 flex items-center gap-2">
+                <input
+                  type="text"
+                  placeholder="Add a comment..."
+                  value={newComment}
+                  onChange={(e) => setNewComment(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && handleCommentSubmit()}
+                  className="flex-1 border px-2 py-1 rounded text-sm"
+                />
+                <button
+                  onClick={handleCommentSubmit}
+                  className="text-sm bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
+                >
+                  Post
+                </button>
+              </div>
+            ) : (
+              <div className="text-sm text-gray-500 mt-2">
+                <LoginRegisterDialog
+                  icon={
+                    <span className="underline cursor-pointer">
+                      Login to comment
+                    </span>
+                  }
+                />
+              </div>
+            )}
+          </div>
         </div>
       </DialogContent>
     </Dialog>
