@@ -1,11 +1,13 @@
-import { getLikesOverTimeByCountry, getTopPosts } from "../../../data/posts";
+import { getLikesOverTimeByCountry, getTopLikedPosts, getMostViewPosts } from "../../../data/posts";
 import { getSearchRanking } from "../../../data/trend";
 
 export default async function Dashboard() {
     const searchRanking = await getSearchRanking();
-    const topPosts = await getTopPosts();
+    const topLikedPosts = await getTopLikedPosts();
     const likeOverTimeCountry = await getLikesOverTimeByCountry();
-    console.log(topPosts);
+    const mostViewedPost = await getMostViewPosts();
+    console.log(mostViewedPost)
+    console.log(topLikedPosts);
     console.log(searchRanking);
     console.log(likeOverTimeCountry);
 

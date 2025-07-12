@@ -7,7 +7,6 @@ type LikesByCountryDate = {
   };
 };
 
-
 export const getPosts = async () => {
   const postQuery = firestore.collection("posts").orderBy("created", "desc");
   const snap = await postQuery.get();
@@ -24,6 +23,7 @@ export const getPosts = async () => {
       tags: Array.isArray(data.tags) ? data.tags : [],
       authorId: data.authorId ?? "",
       likeCount: data.likeCount ?? 0,
+      viewCount: data.viewCount ?? 0,
     };
   });
 
@@ -49,6 +49,7 @@ export const getAuthorPosts = async (uid: string) => {
       tags: data.tags,
       authorId: data.authorId,
       likeCount: data.likeCount,
+      viewCount: data.viewCount,
     };
   });
 
@@ -64,8 +65,7 @@ export const getPostById = async (postId: string) => {
   return postData;
 };
 
-
-export const getTopPosts = async (limitCount: number = 3) => {
+export const getTopLikedPosts = async (limitCount: number = 3) => {
   const snap = await firestore
     .collection("posts")
     .orderBy("likeCount", "desc")
@@ -83,6 +83,32 @@ export const getTopPosts = async (limitCount: number = 3) => {
       tags: Array.isArray(data.tags) ? data.tags : [],
       authorId: data.authorId ?? "",
       likeCount: data.likeCount ?? 0,
+      viewCount: data.viewCount ?? 0,
+    };
+  });
+
+  return { data: posts };
+};
+
+export const getMostViewPosts = async (limitCount: number = 5) => {
+  const snap = await firestore
+    .collection("posts")
+    .orderBy("viewCount", "desc")
+    .limit(limitCount)
+    .get();
+
+  const posts: Post[] = snap.docs.map((doc) => {
+    const data = doc.data();
+    return {
+      id: doc.id,
+      title: data.title ?? "",
+      description: data.description ?? "",
+      country: data.country ?? "",
+      images: Array.isArray(data.images) ? data.images : [],
+      tags: Array.isArray(data.tags) ? data.tags : [],
+      authorId: data.authorId ?? "",
+      likeCount: data.likeCount ?? 0,
+      viewCount: data.viewCount ?? 0,
     };
   });
 
