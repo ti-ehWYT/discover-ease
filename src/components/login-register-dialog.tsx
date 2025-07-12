@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { ReactNode, useState } from "react";
 import { VscDiffAdded } from "react-icons/vsc";
 import {
   Dialog,
@@ -12,16 +12,22 @@ import LoginForm from "./login-form";
 import { Button } from "./ui/button";
 import RegisterForm from "./register-form";
 
-export default function LoginRegisterDialog() {
-  const [type, setType] = useState<string>("login");
+interface LoginRegisterDialogProps {
+  icon?: ReactNode;
+}
+export default function LoginRegisterDialog({
+  icon,
+}: LoginRegisterDialogProps) {
+  const [open, setOpen] = useState(false);
+  const [type, setType] = useState<"login" | "register">("login");
   const title = type === "login" ? "Login" : "Register";
   const subTitle =
     type === "login" ? "Sign up" : "Already have an existing account?";
+
+    const closeDialog = () => setOpen(false);
   return (
-    <Dialog>
-      <DialogTrigger className="px-4 text-3xl">
-        <VscDiffAdded />
-      </DialogTrigger>
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger>{icon}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
           <DialogTitle className="flex justify-between items-center">
@@ -34,7 +40,7 @@ export default function LoginRegisterDialog() {
             </Button>
           </DialogTitle>
         </DialogHeader>
-        {type === "login" ? <LoginForm /> : <RegisterForm />}
+        {type === "login" ? <LoginForm onSuccess={closeDialog}/> : <RegisterForm onSuccess={() => setType('login')}/>}
       </DialogContent>
     </Dialog>
   );

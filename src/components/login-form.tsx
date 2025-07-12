@@ -22,8 +22,10 @@ const formSchema = z.object({
   email: z.string().email(),
   password: passwordValidation,
 });
-
-export default function LoginForm() {
+interface LoginFormProps {
+  onSuccess?: () => void;
+}
+export default function LoginForm({ onSuccess }: LoginFormProps) {
   const auth = useAuth();
   const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
@@ -37,6 +39,7 @@ export default function LoginForm() {
   const handleSubmit = async (data: z.infer<typeof formSchema>) => {
     try {
       await auth?.signInWithEmail(data.email, data.password);
+      onSuccess?.()
       router.push("/");
     } catch (e: any) {
       toast.error("Error!", {

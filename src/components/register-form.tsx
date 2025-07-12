@@ -17,8 +17,10 @@ import { registerUser } from "../action/registerUser";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import GoogleLoginButton from "@/components/google-login-button";
-
-export default function RegisterForm() {
+type RegisterFormType = {
+  onSuccess?: () => void;
+}
+export default function RegisterForm({ onSuccess }: RegisterFormType) {
   const form = useForm<z.infer<typeof registerUserSchema>>({
     resolver: zodResolver(registerUserSchema),
     defaultValues: {
@@ -39,8 +41,10 @@ export default function RegisterForm() {
     }
 
     toast.success("Success!", {
-      description: "Your account was created successfully!",
+      description: "Your account was created successfully!, you may proceed to login now.",
+      duration: 3000
     });
+    onSuccess?.()
   };
 
   return (

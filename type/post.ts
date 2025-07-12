@@ -7,4 +7,5 @@ export type Post = {
   tags?: string[];
   authorId?: string;
   likeCount?: number;
+  viewCount?: number;
 };

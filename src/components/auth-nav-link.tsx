@@ -93,7 +93,7 @@ export default function AuthNavLink() {
           </DropdownMenu>
         </>
       )}
-      {!auth?.currentUser && <LoginRegisterDialog />}
+      {!auth?.currentUser && <LoginRegisterDialog icon={<div className="px-4 text-3xl"><VscDiffAdded /></div>} />}
     </>
   );
 }

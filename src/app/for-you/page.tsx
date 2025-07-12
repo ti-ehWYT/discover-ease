@@ -4,5 +4,4 @@ import Question from "./question";
 export default async function Foryou() {
   const { data } = await getPosts();
   return <Question data={data} />;
-
 }

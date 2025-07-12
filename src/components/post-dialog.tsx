@@ -31,6 +31,7 @@ import {
   increment,
 } from "firebase/firestore";
 import { auth, db } from "../../firebase/client";
+import LoginRegisterDialog from "./login-register-dialog";
 export default function PostDialog({
   postItem,
   allowEdit = false,
@@ -38,6 +39,7 @@ export default function PostDialog({
   postItem: Post;
   allowEdit: boolean;
 }) {
+  const [isOpen, setIsOpen] = useState(false);
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(postItem.likeCount ?? 0);
   const user = auth.currentUser;
@@ -79,8 +81,18 @@ export default function PostDialog({
     }
   };
 
+  useEffect(() => {
+    if (isOpen) {
+      const incrementView = async () => {
+        const postRef = doc(db, "posts", postItem.id);
+        await updateDoc(postRef, { viewCount: increment(1) });
+      };
+      incrementView();
+    }
+  }, [isOpen, postItem.id]);
+
   return (
-    <Dialog key={postItem.id}>
+    <Dialog key={postItem.id} onOpenChange={(open) => setIsOpen(open)}>
       <DialogTrigger asChild>
         <Card className="mb-4 break-inside-avoid cursor-pointer">
           <CardHeader>
@@ -164,21 +176,38 @@ export default function PostDialog({
             {postItem.country}
           </div>
           <div className="flex items-center">
-            <button
-              onClick={() => toggleLike()}
-              className="focus:outline-none"
-              title={"Like"}
-            >
-              <HeartIcon
-                className={clsx(
-                  "w-5 h-5 transition-colors",
-                  liked ? "fill-red-500 text-red-500" : "text-gray-400"
-                )}
+            {!user && (
+              <LoginRegisterDialog
+                icon={
+                  <HeartIcon
+                    className={
+                      "w-5 h-5 transition-colors text-gray-400 focus:outline-none"
+                    }
+                  />
+                }
               />
-            </button>
+            )}
+            {user && (
+              <button
+                onClick={() => toggleLike()}
+                className="focus:outline-none"
+                title={"Like"}
+              >
+                <HeartIcon
+                  className={clsx(
+                    "w-5 h-5 transition-colors",
+                    liked ? "fill-red-500 text-red-500" : "text-gray-400"
+                  )}
+                />
+              </button>
+            )}
+
             <span className="text-xs font-medium text-gray-500">
               {likeCount}
             </span>
+            <div className="flex items-center space-x-2 mt-1 text-xs text-muted-foreground">
+              <span>👁 {postItem.viewCount ?? 0} views</span>
+            </div>
           </div>
 
           <DialogDescription
