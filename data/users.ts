@@ -5,12 +5,14 @@ import { registerUserSchema } from "../validation/registerUser";
 export const getCurrentUsers = async (uid: string) => {
   const userRef = firestore.collection("users").doc(uid);
   const snap = await userRef.get();
-
+    console.log(snap.data());
   if (!snap.exists) {
     return { data: null };
   }
 
   const userData = snap.data();
+    console.log(snap.data());
+
   return { data: JSON.parse(JSON.stringify(userData)) };
 };
 
@@ -41,4 +43,16 @@ export const registerUser = async (data: {
       message: e.message ?? "Could not register user",
     };
   }
+};
+
+
+/**
+ * Update a user's profile in Firestore (bio, gender, photoURL).
+ */
+export const updateUserProfile = async (
+  userId: string,
+  data: { bio?: string; gender?: string; photoURL?: string, nickname?: string }
+) => {
+  const userRef = firestore.collection("users").doc(userId);
+  await userRef.update(data);
 };

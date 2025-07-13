@@ -67,14 +67,16 @@ export default function AuthNavLink() {
                     height={70}
                   />
                 )}
-                <AvatarFallback>
-                  {(userProfile?.displayName || userProfile?.email)?.[0]}
-                </AvatarFallback>
+                {!userProfile?.photoURL && (
+                  <AvatarFallback>
+                    {(userProfile?.nickname || userProfile?.displayName)}
+                  </AvatarFallback>
+                )}
               </Avatar>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
               <DropdownMenuLabel>
-                <div>{userProfile?.displayName}</div>
+                <div>{(userProfile?.nickname || userProfile?.displayName)}</div>
                 <div className="font-normal text-xs">{userProfile?.email}</div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
@@ -93,7 +95,15 @@ export default function AuthNavLink() {
           </DropdownMenu>
         </>
       )}
-      {!auth?.currentUser && <LoginRegisterDialog icon={<div className="px-4 text-3xl"><VscDiffAdded /></div>} />}
+      {!auth?.currentUser && (
+        <LoginRegisterDialog
+          icon={
+            <div className="px-4 text-3xl">
+              <VscDiffAdded />
+            </div>
+          }
+        />
+      )}
     </>
   );
 }
