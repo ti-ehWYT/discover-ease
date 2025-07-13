@@ -12,7 +12,7 @@ import {
   FormMessage,
 } from "./ui/form";
 import { Input } from "./ui/input";
-import { TagMultiSelect } from "./user-preference-select";
+import { UserPreferenceMultiSelect } from "./user-preference-select";
 import { CountrySelect } from "./country-select";
 import { Button } from "./ui/button";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -111,7 +111,7 @@ export default function ItineraryForm({
             </FormItem>
           )}
         />
-        <TagMultiSelect control={form.control} name="tags" />
+        <UserPreferenceMultiSelect control={form.control} name="tags" />
         <CountrySelect control={form.control} name="country" />
         {form.watch("itinerary").map((item, index) => (
           <div key={index} className="border p-4 my-4 rounded-lg space-y-4">

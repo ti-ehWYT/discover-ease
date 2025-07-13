@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { fetchUserProfile, fetchUserPosts } from "./action";
+import { fetchUserProfile, fetchUserPosts, fetchUserItineraries } from "./action";
 import PostDialog from "@/components/post-dialog";
 import { useAuth } from "../../../context/auth";
 import { Post } from "../../../type/post";
@@ -10,6 +10,8 @@ import Link from "next/link";
 import Masonry from "react-masonry-css";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ItineraryType } from "../../../type/itinerary";
+import ItineraryCard from "@/components/itinerary-card";
 
 const breakpointColumnsObj = {
   default: 3,
@@ -27,17 +29,19 @@ export default function ProfileClient({ userId }: ProfileClientProps) {
 
   const [userProfile, setUserProfile] = useState<any>(null);
   const [posts, setPosts] = useState<Post[]>([]);
-
+  const [itinerary, setItinerary] = useState<ItineraryType[]>([]);
   useEffect(() => {
     if (!userId) return;
 
     (async () => {
-      const [profile, userPosts] = await Promise.all([
+      const [profile, userPosts, userItinerary] = await Promise.all([
         fetchUserProfile(userId),
         fetchUserPosts(userId),
+        fetchUserItineraries(userId),
       ]);
       setUserProfile(profile);
       setPosts(userPosts);
+      setItinerary(userItinerary);
     })();
   }, [userId]);
 
@@ -149,9 +153,13 @@ export default function ProfileClient({ userId }: ProfileClientProps) {
 
         {/* Itineraries Tab (placeholder for now) */}
         <TabsContent value="itineraries">
-          <div className="text-center text-gray-500 py-12">
-            No itineraries available yet.
+          {itinerary.length > 0 ? itinerary.map((iti) => {
+            return <ItineraryCard key={iti.id} id={iti.id} title={iti.title} coverImages={iti.coverImage}/>
+          }) : 
+           <div className="text-center text-gray-500 py-12">
+            No Itinerary available yet.
           </div>
+          }
         </TabsContent>
 
         <TabsContent value="favourite">
