@@ -8,6 +8,8 @@ import { Post } from "../../../type/post";
 import { EllipsisVertical, Mars, Venus } from "lucide-react";
 import Link from "next/link";
 import Masonry from "react-masonry-css";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const breakpointColumnsObj = {
   default: 3,
@@ -34,9 +36,31 @@ export default function MyProfileClient() {
       setPosts(userPosts);
     })();
   }, [uid]);
+  if (!uid || !userProfile || posts.length === 0) {
+    return (
+      <div className="p-4 max-w-5xl mx-auto">
+        {/* Profile Skeleton */}
+        <div className="flex flex-col sm:flex-row items-center sm:items-start sm:justify-between gap-4 mb-8">
+          <Skeleton className="w-32 h-32 rounded-full" />
 
-  if (!uid) return <div>Loading or not logged in...</div>;
+          <div className="flex-1 sm:ml-6 w-full space-y-3">
+            <Skeleton className="h-6 w-1/2" />
+            <Skeleton className="h-4 w-3/4" />
+            <Skeleton className="h-4 w-1/3" />
+          </div>
+        </div>
 
+        <hr className="my-8 border-t border-gray-300" />
+
+        {/* Masonry Skeleton */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <Skeleton key={i} className="rounded-md aspect-[4/3] w-full h-48" />
+          ))}
+        </div>
+      </div>
+    );
+  }
   return (
     <div className="p-4 max-w-5xl mx-auto">
       {/* Profile Header */}
@@ -93,18 +117,41 @@ export default function MyProfileClient() {
 
       <hr className="my-8 border-t border-gray-300" />
 
-      {/* User Posts with Masonry */}
-      <Masonry
-        breakpointCols={breakpointColumnsObj}
-        className="my-masonry-grid"
-        columnClassName="my-masonry-grid_column"
-      >
-        {posts.map((post, index) => (
-          <div key={post.id || index}>
-            <PostDialog postItem={post} allowEdit />
+      <Tabs defaultValue="posts" className="w-full">
+        <TabsList className="mb-6">
+          <TabsTrigger value="posts">Posts</TabsTrigger>
+          <TabsTrigger value="itineraries">Itineraries</TabsTrigger>
+          <TabsTrigger value="favourite">Favourite</TabsTrigger>
+        </TabsList>
+
+        {/* Posts Tab */}
+        <TabsContent value="posts">
+          <Masonry
+            breakpointCols={breakpointColumnsObj}
+            className="my-masonry-grid"
+            columnClassName="my-masonry-grid_column"
+          >
+            {posts.map((post, index) => (
+              <div key={post.id || index}>
+                <PostDialog postItem={post} allowEdit />
+              </div>
+            ))}
+          </Masonry>
+        </TabsContent>
+
+        {/* Itineraries Tab (placeholder for now) */}
+        <TabsContent value="itineraries">
+          <div className="text-center text-gray-500 py-12">
+            No itineraries available yet.
           </div>
-        ))}
-      </Masonry>
+        </TabsContent>
+
+        <TabsContent value="favourite">
+          <div className="text-center text-gray-500 py-12">
+            No favourite available yet.
+          </div>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

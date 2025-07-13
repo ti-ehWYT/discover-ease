@@ -26,11 +26,23 @@ export const saveNewPost = async (data: {
       message: validation.error.issues[0]?.message ?? "An error occurred",
     };
   }
+ const uid = verifiedToken.uid;
 
+  const userDoc = await firestore.collection("users").doc(uid).get();
+
+  let userPhotoURL = "";
+  let name = "";
+  if (userDoc.exists) {
+    const userData = userDoc.data();
+    userPhotoURL = userData?.photoURL || "";
+    name = userData?.nickname || userData?.displayName;
+  }
   const post = await firestore.collection("posts").add({
     ...formData,
     created: new Date(),
     updated: new Date(),
+    avatar: userPhotoURL, 
+    authorName: name,
     authorId: verifiedToken.uid,
   });
 

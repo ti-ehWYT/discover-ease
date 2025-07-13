@@ -43,7 +43,6 @@ const breakpointColumnsObj = {
           breakpointCols={breakpointColumnsObj}
           className="my-masonry-grid"
           columnClassName="my-masonry-grid_column"
-          style={{ marginLeft: "-1rem", width: "auto" }} // optional: remove left margin to align
         >
           {filteredPosts.map((item) => (
             <PostDialog key={item.id} postItem={item} allowEdit={false} />
