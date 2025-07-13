@@ -60,7 +60,6 @@ const [uploading, setUploading] = useState(false);
       setPhotoURL(url);
       toast.success("Profile picture updated");
     } catch (error) {
-      console.error("Upload error:", error);
       toast.error("Failed to upload profile picture");
     } finally {
       setUploading(false);

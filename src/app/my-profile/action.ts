@@ -11,7 +11,6 @@ export async function fetchUserPosts(uid: string) {
 
 export async function fetchUserProfile(uid: string) {
   const { data } = await getCurrentUsers(uid);
-  console.log("TEST", data);
   return data;
 }
 

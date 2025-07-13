@@ -24,6 +24,9 @@ export const getPosts = async () => {
       authorId: data.authorId ?? "",
       likeCount: data.likeCount ?? 0,
       viewCount: data.viewCount ?? 0,
+      avatar: data.avatar ?? "",
+      created: data.created?.toDate().toISOString() ?? null,
+      authorName: data.authorName ?? "",
     };
   });
 
@@ -42,14 +45,17 @@ export const getAuthorPosts = async (uid: string) => {
     const data = doc.data();
     return {
       id: doc.id,
-      description: data.description,
-      title: data.title,
-      country: data.country,
-      images: data.images,
-      tags: data.tags,
-      authorId: data.authorId,
-      likeCount: data.likeCount,
-      viewCount: data.viewCount,
+      title: data.title ?? "",
+      description: data.description ?? "",
+      country: data.country ?? "",
+      images: Array.isArray(data.images) ? data.images : [],
+      tags: Array.isArray(data.tags) ? data.tags : [],
+      authorId: data.authorId ?? "",
+      likeCount: data.likeCount ?? 0,
+      viewCount: data.viewCount ?? 0,
+      avatar: data.avatar ?? "",
+      created: data.created?.toDate().toISOString() ?? null,
+      authorName: data.authorName ?? "",
     };
   });
 

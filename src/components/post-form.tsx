@@ -13,12 +13,12 @@ import {
   FormMessage,
 } from "./ui/form";
 import { Input } from "./ui/input";
-import { Textarea } from "./ui/textarea";
 import { Button } from "./ui/button";
 import MultiImageUploader, { ImageUpload } from "./multi-image-uploader";
 import { CountrySelect } from "./country-select";
-import { TagMultiSelect } from "./tags-select";
+import { UserPreferenceMultiSelect } from "./user-preference-select";
 import DescriptionInput from "./description-input";
+import TagInputField from "./tag-input";
 
 type Props = {
   submitButtonLabel: React.ReactNode;
@@ -37,6 +37,7 @@ export default function PostForm({
       country: "",
       tags: [],
       images: [],
+      user_preference: [],
     },
     ...defaultValues,
   };
@@ -107,7 +108,16 @@ export default function PostForm({
               </FormItem>
             )}
           />
-          <TagMultiSelect control={form.control} name="tags" />
+          <TagInputField
+            name="tags"
+            control={form.control}
+            label="Tags"
+            placeholder="Type tag and press space or Enter"
+          />
+          <UserPreferenceMultiSelect
+            control={form.control}
+            name="user_preference"
+          />
           <CountrySelect control={form.control} name="country" />
         </fieldset>
         <Button type="submit" disabled={form.formState.isSubmitting}>

@@ -27,7 +27,7 @@ export default function LoginRegisterDialog({
     const closeDialog = () => setOpen(false);
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger>{icon}</DialogTrigger>
+      <DialogTrigger className="focus:outline-none">{icon}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
           <DialogTitle className="flex justify-between items-center">

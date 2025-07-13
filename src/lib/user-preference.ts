@@ -1,4 +1,4 @@
-export const tagOptions = [
+export const user_preference_list = [
   "Beach",
   "Mountain",
   "Relax",

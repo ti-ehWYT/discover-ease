@@ -7,6 +7,7 @@ import Cookies from "js-cookie";
 import { Post } from "../../../type/post";
 import PostDialog from "@/components/post-dialog";
 import { analytics } from "../../../firebase/client";
+import Masonry from "react-masonry-css";
 
 const questions = [
   {
@@ -42,7 +43,11 @@ const questions = [
     options: ["Beautiful view", "Activities"],
   },
 ];
-
+const breakpointColumnsObj = {
+  default: 3,
+  1024: 2,
+  640: 1,
+};
 export default function Question({ data }: { data: Post[] }) {
   const [started, setStarted] = useState(false);
   const [currentQuestion, setCurrentQuestion] = useState(0);
@@ -61,7 +66,7 @@ export default function Question({ data }: { data: Post[] }) {
 
   const finalPosts =
     taggedPosts.length > 0 ? [...taggedPosts, ...untaggedPosts] : data;
-    
+
   const handleStart = () => {
     setStarted(true);
   };
@@ -156,13 +161,22 @@ export default function Question({ data }: { data: Post[] }) {
       )}
 
       {saved && (
-        <div className="columns-1 sm:columns-2 md:columns-3 gap-4">
+        <Masonry
+          breakpointCols={breakpointColumnsObj}
+          className="my-masonry-grid"
+          columnClassName="my-masonry-grid_column"
+        >
           {finalPosts.map((item) => (
             <div key={item.id} className="mb-4 break-inside-avoid">
               <PostDialog postItem={item} allowEdit={false} />
             </div>
           ))}
-        </div>
+          {finalPosts.length === 0 && (
+            <div className="text-center col-span-full py-10 text-gray-500">
+              No posts matched your preferences.
+            </div>
+          )}
+        </Masonry>
       )}
     </div>
   );

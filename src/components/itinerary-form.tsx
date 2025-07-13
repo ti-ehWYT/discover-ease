@@ -12,7 +12,7 @@ import {
   FormMessage,
 } from "./ui/form";
 import { Input } from "./ui/input";
-import { TagMultiSelect } from "./tags-select";
+import { TagMultiSelect } from "./user-preference-select";
 import { CountrySelect } from "./country-select";
 import { Button } from "./ui/button";
 import { zodResolver } from "@hookform/resolvers/zod";

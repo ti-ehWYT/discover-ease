@@ -1,23 +1,23 @@
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "./ui/form";
+import { FormField, FormItem, FormLabel, FormMessage } from "./ui/form";
 import { Button } from "./ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { Checkbox } from "./ui/checkbox";
-import { tagOptions } from "../lib/tags";
+import { user_preference_list } from "../lib/user-preference";
 import { Control } from "react-hook-form";
 
-type TagMultiSelectProps = {
+type UserPreferenceSelectProps = {
   control: Control<any>;
   name: string;
 };
 
-export function TagMultiSelect({ control, name }: TagMultiSelectProps) {
+export function UserPreferenceMultiSelect({ control, name }: UserPreferenceSelectProps) {
   return (
     <FormField
       control={control}
       name={name}
       render={({ field }) => (
         <FormItem className="py-3">
-          <FormLabel>Tags</FormLabel>
+          <FormLabel>User Preference</FormLabel>
           <Popover>
             <PopoverTrigger asChild>
               <Button
@@ -31,28 +31,28 @@ export function TagMultiSelect({ control, name }: TagMultiSelectProps) {
               >
                 {Array.isArray(field.value) && field.value.length > 0
                   ? field.value.join(", ")
-                  : "Select tags"}
+                  : "Select user preference"}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-[250px] max-h-[200px] overflow-y-auto">
               <div className="flex flex-col space-y-2">
-                {tagOptions.map((tag) => (
-                  <div key={tag} className="flex items-center space-x-2">
+                {user_preference_list.map((preference) => (
+                  <div key={preference} className="flex items-center space-x-2">
                     <Checkbox
-                      id={tag}
-                      checked={field.value?.includes(tag)}
+                      id={preference}
+                      checked={field.value?.includes(preference)}
                       onCheckedChange={(checked) => {
                         const newValue = checked
-                          ? [...(field.value || []), tag]
-                          : (field.value || []).filter((t: string) => t !== tag);
+                          ? [...(field.value || []), preference]
+                          : (field.value || []).filter((t: string) => t !== preference);
                         field.onChange(newValue);
                       }}
                     />
                     <label
-                      htmlFor={tag}
+                      htmlFor={preference}
                       className="text-sm font-medium leading-none"
                     >
-                      {tag}
+                      {preference}
                     </label>
                   </div>
                 ))}

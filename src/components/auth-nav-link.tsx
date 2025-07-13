@@ -43,7 +43,7 @@ export default function AuthNavLink() {
             </Link>
           )}
           <DropdownMenu>
-            <DropdownMenuTrigger className="px-4 text-3xl">
+            <DropdownMenuTrigger className="mx-4 text-3xl">
               <VscDiffAdded />
             </DropdownMenuTrigger>
             <DropdownMenuContent>
@@ -98,7 +98,7 @@ export default function AuthNavLink() {
       {!auth?.currentUser && (
         <LoginRegisterDialog
           icon={
-            <div className="px-4 text-3xl">
+            <div className="mx-4 text-3xl">
               <VscDiffAdded />
             </div>
           }

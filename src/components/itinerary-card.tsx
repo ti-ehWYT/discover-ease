@@ -18,6 +18,7 @@ export default function ItineraryCard({ id, title, coverImages }: Props) {
                 )}?alt=media`}
             alt={title}
             className="w-full h-48 object-cover"
+            sizes="100vw"
             width={0}
             height={0}
           />

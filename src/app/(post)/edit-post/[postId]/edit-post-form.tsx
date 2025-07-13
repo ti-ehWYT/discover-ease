@@ -25,6 +25,7 @@ export default function EditPostForm({
   country,
   tags = [],
   images = [],
+  user_preference = [],
 }: Props) {
   const router = useRouter();
  
@@ -88,6 +89,7 @@ export default function EditPostForm({
           description,
           country,
           tags,
+          user_preference,
           images: images.map((image) => ({
             id: image,
             url: image,
