@@ -24,7 +24,8 @@ type Props = {
 };
 
 export default async function ItineraryDetailPage({ params }: Props) {
-  const docRef = firestore.collection("itineraries").doc(params.itineraryId);
+  const { itineraryId } = await params;
+  const docRef = firestore.collection("itineraries").doc(itineraryId);
   const snapshot = await docRef.get();
 
   if (!snapshot.exists) {

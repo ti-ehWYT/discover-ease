@@ -171,9 +171,7 @@ export default function PostDialog({
                   <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10" />
                 </>
               ) : (
-                <div
-                  className="w-full bg-gray-200 flex items-center justify-center"
-                >
+                <div className="w-full bg-gray-200 flex items-center justify-center">
                   No Image
                 </div>
               )}
@@ -264,15 +262,17 @@ export default function PostDialog({
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-4">
               {postItem.avatar && (
-                <div className="w-12 h-12 rounded-full overflow-hidden border border-gray-200">
-                  <Image
-                    src={postItem.avatar}
-                    alt="Post avatar"
-                    width={48}
-                    height={48}
-                    className="object-cover w-full h-full rounded-full"
-                  />
-                </div>
+                <Link href={`/profile/${postItem.authorId}`}>
+                  <div className="block w-12 h-12 rounded-full overflow-hidden border border-gray-200">
+                    <Image
+                      src={postItem.avatar}
+                      alt="Post avatar"
+                      width={48}
+                      height={48}
+                      className="object-cover w-full h-full rounded-full"
+                    />
+                  </div>
+                </Link>
               )}
               <div>
                 <DialogTitle className="text-xl font-bold">
@@ -360,10 +360,11 @@ export default function PostDialog({
                   >
                     <div className="flex-1">
                       <div className="flex items-center space-x-2">
-                        <span className="font-semibold text-gray-900">
-                          {comment.userName}
-                        </span>
-
+                        <Link href={`/profile/${comment.userId}`}>
+                          <span className="font-semibold text-gray-900">
+                            {comment.userName}
+                          </span>
+                        </Link>
                         {createdAtDate && (
                           <span className="text-xs text-gray-400 italic ml-2">
                             {formatTimestamp(createdAtDate)}

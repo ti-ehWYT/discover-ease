@@ -15,6 +15,7 @@ import {
   UploadTask,
 } from "firebase/storage";
 import { savePostImages } from "../../action";
+import { useAuth } from "../../../../../context/auth";
 
 type Props = Post;
 
@@ -28,7 +29,7 @@ export default function EditPostForm({
   user_preference = [],
 }: Props) {
   const router = useRouter();
- 
+  const auth = useAuth();
   const handleSubmit = async (data: z.infer<typeof postSchema>) => {
     const token = await auth?.currentUser?.getIdToken();
 
@@ -73,7 +74,7 @@ export default function EditPostForm({
       description: "Post updated!",
     });
 
-    router.push("/my-profile");
+    router.push(`/profile/${auth?.currentUser?.uid}`);
   };
   return (
     <div className="w-full max-w-4xl mx-auto">

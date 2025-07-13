@@ -15,7 +15,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { VscDiffAdded } from "react-icons/vsc";
 import { useEffect, useState } from "react";
-import { fetchUserProfile } from "@/app/my-profile/action";
+import { fetchUserProfile } from "@/app/profile/action";
 import LoginRegisterDialog from "./login-register-dialog";
 
 export default function AuthNavLink() {
@@ -81,7 +81,7 @@ export default function AuthNavLink() {
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem asChild>
-                <Link href="/my-profile">My Profile</Link>
+                <Link href={`/profile/${uid}`}>My Profile</Link>
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={async () => {

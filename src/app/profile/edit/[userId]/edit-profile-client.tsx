@@ -26,7 +26,7 @@ const [uploading, setUploading] = useState(false);
   // Only allow user to edit their own profile
   useEffect(() => {
     if (!auth?.currentUser?.uid || auth.currentUser.uid !== userId) {
-      router.push("/my-profile"); // redirect if not owner
+      router.push(`/profile/${userId}`); // redirect if not owner
     }
   }, [auth, userId, router]);
   useEffect(() => {
@@ -71,7 +71,7 @@ const [uploading, setUploading] = useState(false);
     setLoading(true);
     try {
       await saveUserProfile(userId, { bio, gender, photoURL, nickname });
-      router.push("/my-profile"); // Redirect after save
+      router.push(`/profile/${userId}`); // Redirect after save
     } catch (error) {
       console.error("Failed to update profile", error);
     }

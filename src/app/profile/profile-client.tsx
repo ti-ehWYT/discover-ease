@@ -17,26 +17,31 @@ const breakpointColumnsObj = {
   640: 1,
 };
 
-export default function MyProfileClient() {
+interface ProfileClientProps {
+  userId: string;
+}
+
+export default function ProfileClient({ userId }: ProfileClientProps) {
   const auth = useAuth();
-  const uid = auth?.currentUser?.uid;
+  const currentUserId = auth?.currentUser?.uid;
 
   const [userProfile, setUserProfile] = useState<any>(null);
   const [posts, setPosts] = useState<Post[]>([]);
 
   useEffect(() => {
-    if (!uid) return;
+    if (!userId) return;
 
     (async () => {
       const [profile, userPosts] = await Promise.all([
-        fetchUserProfile(uid),
-        fetchUserPosts(uid),
+        fetchUserProfile(userId),
+        fetchUserPosts(userId),
       ]);
       setUserProfile(profile);
       setPosts(userPosts);
     })();
-  }, [uid]);
-  if (!uid || !userProfile || posts.length === 0) {
+  }, [userId]);
+
+  if (!userId || !userProfile || posts.length === 0) {
     return (
       <div className="p-4 max-w-5xl mx-auto">
         {/* Profile Skeleton */}
@@ -61,6 +66,7 @@ export default function MyProfileClient() {
       </div>
     );
   }
+
   return (
     <div className="p-4 max-w-5xl mx-auto">
       {/* Profile Header */}
@@ -76,12 +82,14 @@ export default function MyProfileClient() {
 
         {/* User Info */}
         <div className="flex-1 sm:ml-6 w-full relative">
-          {/* Edit Button */}
-          <div className="absolute top-0 right-0">
-            <Link href={`/my-profile/edit/${uid}`}>
-              <EllipsisVertical className="text-gray-500 hover:text-gray-800" />
-            </Link>
-          </div>
+          {/* Edit Button (only show if viewing own profile) */}
+          {currentUserId === userId && (
+            <div className="absolute top-0 right-0">
+              <Link href={`/profile/edit/${userId}`}>
+                <EllipsisVertical className="text-gray-500 hover:text-gray-800" />
+              </Link>
+            </div>
+          )}
 
           <h2 className="text-2xl font-bold">
             {userProfile?.nickname ||
@@ -133,7 +141,7 @@ export default function MyProfileClient() {
           >
             {posts.map((post, index) => (
               <div key={post.id || index}>
-                <PostDialog postItem={post} allowEdit />
+                <PostDialog postItem={post} allowEdit={currentUserId === userId} />
               </div>
             ))}
           </Masonry>

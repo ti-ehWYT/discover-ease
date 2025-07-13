@@ -14,8 +14,7 @@ export async function middleware(request: NextRequest) {
   if (
     !token &&
     (pathname.startsWith("/create-post") ||
-      pathname.startsWith("/edit-post") ||
-      pathname.startsWith("/my-profile"))
+      pathname.startsWith("/edit-post"))
   ) {
     return NextResponse.redirect(new URL("/", request.url));
   }
@@ -37,6 +36,5 @@ export const config = {
     "/dashboard",
     "/create-post",
     "/edit-post/:path*",
-    "/my-profile",
   ],
 };
