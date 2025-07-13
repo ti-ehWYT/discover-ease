@@ -51,7 +51,7 @@ export default function AuthNavLink() {
                 <Link href="/create-post">New Post</Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
-                <Link href="/create-itinenary">New itinenary</Link>
+                <Link href="/create-itinerary">New itinerary</Link>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

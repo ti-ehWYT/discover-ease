@@ -1,13 +1,13 @@
 import "server-only";
 import { firestore, auth } from "../firebase/server";
-import { ItinenaryType } from "../type/itinenary";
+import { ItineraryType } from "../type/itinerary";
 ;
 
 export const getItineraries = async () => {
   const itinerariesQuery = firestore.collection("itineraries").orderBy("created", "desc");
   const snap = await itinerariesQuery.get();
 
-  const itineraries: ItinenaryType[] = snap.docs.map((doc) => {
+  const itineraries: ItineraryType[] = snap.docs.map((doc) => {
     const data = doc.data();
 
     return {
@@ -17,7 +17,7 @@ export const getItineraries = async () => {
       country: data.country ?? "",
       coverImage: Array.isArray(data.coverImage) ? data.coverImage : [],
       tags: Array.isArray(data.tags) ? data.tags : [],
-      itinenary: Array.isArray(data.itinenary) ? data.itinenary : [],
+      itinerary: Array.isArray(data.itinerary) ? data.itinerary : [],
       authorId: data.authorId ?? "",
     };
   });

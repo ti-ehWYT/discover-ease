@@ -7,9 +7,9 @@ type Props = {
   coverImages?: string[];
 };
 
-export default function ItinenaryCard({ id, title, coverImages }: Props) {
+export default function ItineraryCard({ id, title, coverImages }: Props) {
   return (
-    <Link href={`/itinenary/${id}`} passHref>
+    <Link href={`/itinerary/${id}`} passHref>
       <div className="block border rounded-lg shadow-md overflow-hidden max-w-sm hover:shadow-lg transition-shadow duration-300">
         {coverImages && coverImages.length > 0 ? (
           <Image
@@ -18,7 +18,6 @@ export default function ItinenaryCard({ id, title, coverImages }: Props) {
                 )}?alt=media`}
             alt={title}
             className="w-full h-48 object-cover"
-            loading="lazy"
             width={0}
             height={0}
           />

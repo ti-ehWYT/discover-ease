@@ -1,5 +1,5 @@
 import { firestore } from "../../../../firebase/server";
-import { ItinenaryType } from "../../../../type/itinenary";
+import { ItineraryType } from "../../../../type/itinerary";
 import Image from "next/image";
 
 import {
@@ -19,32 +19,31 @@ import {
 
 type Props = {
   params: {
-    itinenaryId: string;
+    itineraryId: string;
   };
 };
 
-export default async function ItinenaryDetailPage({ params }: Props) {
-  const docRef = firestore.collection("itineraries").doc(params.itinenaryId);
+export default async function ItineraryDetailPage({ params }: Props) {
+  const docRef = firestore.collection("itineraries").doc(params.itineraryId);
   const snapshot = await docRef.get();
 
   if (!snapshot.exists) {
     return <div className="p-4 text-red-500">Itinerary not found.</div>;
   }
 
-  const itinenary = snapshot.data() as ItinenaryType;
+  const itinerary = snapshot.data() as ItineraryType;
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-6">
-      <h1 className="text-3xl font-bold mb-4">{itinenary.title}</h1>
-      <p className="text-muted-foreground mb-6">{itinenary.description}</p>
+      <h1 className="text-3xl font-bold mb-4">{itinerary.title}</h1>
 
-      {Array.isArray(itinenary.coverImage) && itinenary.coverImage[0] && (
+      {Array.isArray(itinerary.coverImage) && itinerary.coverImage[0] && (
         <div className="w-full mb-8">
           <Image
             src={`https://firebasestorage.googleapis.com/v0/b/discover-ease-ee29d.firebasestorage.app/o/${encodeURIComponent(
-              itinenary.coverImage[0]
+              itinerary.coverImage[0]
             )}?alt=media`}
-            alt={itinenary.title}
+            alt={itinerary.title}
             className="w-full h-auto rounded-lg shadow"
             width={1200}
             height={800}
@@ -52,9 +51,10 @@ export default async function ItinenaryDetailPage({ params }: Props) {
           />
         </div>
       )}
+      <p className="text-muted-foreground mb-6">{itinerary.description}</p>
 
       <h2 className="text-2xl font-semibold mb-4">Itinerary</h2>
-      {itinenary.itinenary.map((day) => (
+      {itinerary.itinerary.map((day) => (
         <div
           key={day.day}
           className="mb-8 border border-border rounded-lg p-4 shadow-sm"

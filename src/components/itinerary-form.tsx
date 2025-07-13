@@ -2,7 +2,7 @@
 
 import React from "react";
 import { z } from "zod";
-import { itinenarySchema } from "../../validation/itinenarySchema";
+import { itinerarySchema } from "../../validation/itinerarySchema";
 import {
   Form,
   FormControl,
@@ -22,23 +22,23 @@ import DescriptionInput from "./description-input";
 
 type Props = {
   submitButtonLabel: React.ReactNode;
-  handleSubmit: (data: z.infer<typeof itinenarySchema>) => void;
-  defaultValues?: z.infer<typeof itinenarySchema>;
+  handleSubmit: (data: z.infer<typeof itinerarySchema>) => void;
+  defaultValues?: z.infer<typeof itinerarySchema>;
 };
 
-export default function itinenaryForm({
+export default function ItineraryForm({
   handleSubmit,
   submitButtonLabel,
   defaultValues,
 }: Props) {
-  const combinedDefaultValues: z.infer<typeof itinenarySchema> = {
+  const combinedDefaultValues: z.infer<typeof itinerarySchema> = {
     ...{
       title: "",
       description: "",
       country: "",
       tags: [],
       coverImage: [],
-      itinenary: [
+      itinerary: [
         {
           day: 1,
           images: [],
@@ -48,8 +48,8 @@ export default function itinenaryForm({
     },
     ...defaultValues,
   };
-  const form = useForm<z.infer<typeof itinenarySchema>>({
-    resolver: zodResolver(itinenarySchema),
+  const form = useForm<z.infer<typeof itinerarySchema>>({
+    resolver: zodResolver(itinerarySchema),
     defaultValues: combinedDefaultValues,
   });
 
@@ -113,19 +113,19 @@ export default function itinenaryForm({
         />
         <TagMultiSelect control={form.control} name="tags" />
         <CountrySelect control={form.control} name="country" />
-        {form.watch("itinenary").map((item, index) => (
+        {form.watch("itinerary").map((item, index) => (
           <div key={index} className="border p-4 my-4 rounded-lg space-y-4">
             <div className="flex justify-between items-center">
               <h3 className="text-lg font-bold">Day {index + 1}</h3>
-              {form.watch("itinenary").length > 1 && (
+              {form.watch("itinerary").length > 1 && (
                 <Button
                   type="button"
                   variant="destructive"
                   size="sm"
                   onClick={() => {
-                    const current = form.getValues("itinenary");
+                    const current = form.getValues("itinerary");
                     const updated = current.filter((_, i) => i !== index);
-                    form.setValue("itinenary", updated);
+                    form.setValue("itinerary", updated);
                   }}
                 >
                   Remove Day
@@ -135,7 +135,7 @@ export default function itinenaryForm({
             {/* Images for the day */}
             <FormField
               control={form.control}
-              name={`itinenary.${index}.images`}
+              name={`itinerary.${index}.images`}
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Images</FormLabel>
@@ -143,7 +143,7 @@ export default function itinenaryForm({
                     <MultiImageUploader
                       images={field.value}
                       onImagesChange={(images: ImageUpload[]) => {
-                        form.setValue(`itinenary.${index}.images`, images);
+                        form.setValue(`itinerary.${index}.images`, images);
                       }}
                       urlFormatter={(image) => {
                         if (!image.file) {
@@ -164,7 +164,7 @@ export default function itinenaryForm({
             {/* Activities */}
             <FormField
               control={form.control}
-              name={`itinenary.${index}.activity`}
+              name={`itinerary.${index}.activity`}
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Activities</FormLabel>
@@ -223,8 +223,8 @@ export default function itinenaryForm({
           variant="outline"
           className="my-4"
           onClick={() => {
-            const current = form.getValues("itinenary");
-            form.setValue("itinenary", [
+            const current = form.getValues("itinerary");
+            form.setValue("itinerary", [
               ...current,
               {
                 day: current.length + 1,

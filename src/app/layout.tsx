@@ -47,8 +47,8 @@ export default function RootLayout({
               <Link className="px-8 uppercase hover:underline" href="/">
                 Feed
               </Link>
-              <Link className="px-8 uppercase hover:underline" href="/itinenary">
-                Itinenary
+              <Link className="px-8 uppercase hover:underline" href="/itinerary">
+                Itinerary
               </Link>
               <Link className="px-8 uppercase hover:underline" href="/trend">
                 Trend

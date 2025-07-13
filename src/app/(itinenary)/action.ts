@@ -3,15 +3,15 @@
 import { auth, firestore } from "../../../firebase/server";
 import { z } from "zod";
 
-export const saveItinenaryImages = async (
+export const saveItineraryImages = async (
   {
-    itinenaryId,
+    ItineraryId,
     images,
   }: {
-    itinenaryId: string;
+    ItineraryId: string;
     images: {
       coverImage: string[];
-      itinenary: {
+      itinerary: {
         day: number;
         activity: string[];
         images: string[];
@@ -29,10 +29,10 @@ export const saveItinenaryImages = async (
   }
 
   const schema = z.object({
-    itinenaryId: z.string(),
+    ItineraryId: z.string(),
     images: z.object({
       coverImage: z.array(z.string()),
-      itinenary: z.array(
+      itinerary: z.array(
         z.object({
           day: z.number(),
           activity: z.array(z.string()),
@@ -42,7 +42,7 @@ export const saveItinenaryImages = async (
     }),
   });
 
-  const validation = schema.safeParse({ itinenaryId, images });
+  const validation = schema.safeParse({ ItineraryId, images });
   if (!validation.success) {
     return {
       error: true,
@@ -50,9 +50,9 @@ export const saveItinenaryImages = async (
     };
   }
 
-  await firestore.collection("itineraries").doc(itinenaryId).update({
+  await firestore.collection("itineraries").doc(ItineraryId).update({
     coverImage: images.coverImage,
-    itinenary: images.itinenary,
+    itinerary: images.itinerary,
   });
 
   return {

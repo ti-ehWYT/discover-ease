@@ -1,4 +1,4 @@
-export type ItinenaryType = {
+export type ItineraryType = {
   id: string;
   description?: string;
   title: string;
@@ -6,7 +6,7 @@ export type ItinenaryType = {
   coverImage?: string[];
   tags?: string[];
   authorId?: string;
-  itinenary: ActivityType[],
+  itinerary: ActivityType[],
 };
 
 export type ActivityType = {
