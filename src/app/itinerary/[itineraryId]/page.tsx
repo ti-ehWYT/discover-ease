@@ -18,14 +18,13 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 
-type Props = {
-  params: {
-    itineraryId: string;
-  };
-};
+export default async function ItineraryDetailPage({
+  params,
+}: {
+  params: Promise<{ itineraryId: string }>;
+}) {
+  const { itineraryId } = await params;
 
-export default async function ItineraryDetailPage({ params }: Props) {
-  const { itineraryId } = params;
   const docRef = firestore.collection("itineraries").doc(itineraryId);
   const snapshot = await docRef.get();
 
@@ -44,14 +43,19 @@ export default async function ItineraryDetailPage({ params }: Props) {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-4xl font-bold text-gray-900">{itinerary.title}</h1>
+          <h1 className="text-4xl font-bold text-gray-900">
+            {itinerary.title}
+          </h1>
           <p className="text-sm text-gray-500 mt-1">
             Country: <span className="font-medium">{itinerary.country}</span> |{" "}
           </p>
         </div>
         <div className="flex gap-2 items-center">
-          <FavoriteButton itineraryId={params.itineraryId} />
-          <EditButton itineraryId={params.itineraryId} authorId={itinerary.authorId ?? ''} />
+          <FavoriteButton itineraryId={(await params).itineraryId} />
+          <EditButton
+            itineraryId={(await params).itineraryId}
+            authorId={itinerary.authorId ?? ""}
+          />
         </div>
       </div>
 

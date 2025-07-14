@@ -1,10 +1,6 @@
 import EditProfilePage from "./edit-profile-client";
 
-interface Props {
-  params: { userId: string };
-}
-
-export default async function EditPage({ params }: Props) {
+export default async function EditPage({ params }: { params: Promise<{ userId: string}>}) {
   const { userId } = await params;
   return <EditProfilePage userId={userId} />;
 }

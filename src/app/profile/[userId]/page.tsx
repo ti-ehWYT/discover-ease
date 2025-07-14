@@ -1,14 +1,7 @@
-// src/app/profile/[userId]/page.tsx
-import ProfileClient from "../profile-client"; // Adjust path if needed
 
-interface PageProps {
-  params: {
-    userId: string;
-  };
-}
+import ProfileClient from "../profile-client";
 
-export default async function UserProfilePage({ params }: PageProps) {
-  // params.userId comes from the route [userId]
+export default async function UserProfilePage({ params }: { params: Promise<{ userId: string}>}) {
   const { userId } = await params;
   return <ProfileClient userId={userId} />;
 }
