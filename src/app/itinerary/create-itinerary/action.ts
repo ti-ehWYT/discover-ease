@@ -18,12 +18,24 @@ export const saveNewitinerary = async (data: any) => {
       message: validation.error.issues[0]?.message ?? "Validation failed",
     };
   }
+ const uid = verifiedToken.uid;
 
+  const userDoc = await firestore.collection("users").doc(uid).get();
+
+  let userPhotoURL = "";
+  let name = "";
+  if (userDoc.exists) {
+    const userData = userDoc.data();
+    userPhotoURL = userData?.photoURL || "";
+    name = userData?.nickname || userData?.displayName;
+  }
   const itineraryDoc = await firestore.collection("itineraries").add({
     ...formData,
     created: new Date(),
     updated: new Date(),
     authorId: verifiedToken.uid,
+    avatar: userPhotoURL,
+    authorName: name,
   });
 
   return { itineraryId: itineraryDoc.id };

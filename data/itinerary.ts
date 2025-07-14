@@ -60,3 +60,37 @@ export const getItineraryById = async (itineraryId: string) => {
   } as ItineraryType;
   return itineraryData;
 };
+
+
+export const getUserFavoriteItineraries = async (uid: string) => {
+  const itinerariesSnap = await firestore.collection("itineraries").get();
+  const favorites: ItineraryType[] = [];
+
+  for (const doc of itinerariesSnap.docs) {
+    const favoriteRef = firestore
+      .collection("itineraries")
+      .doc(doc.id)
+      .collection("favorites")
+      .doc(uid);
+
+    const favSnap = await favoriteRef.get();
+    if (favSnap.exists) {
+      const data = doc.data();
+      favorites.push({
+        id: doc.id,
+        title: data.title ?? "",
+        description: data.description ?? "",
+        country: data.country ?? "",
+        coverImage: Array.isArray(data.coverImage) ? data.coverImage : [],
+        tags: Array.isArray(data.tags) ? data.tags : [],
+        itinerary: Array.isArray(data.itinerary) ? data.itinerary : [],
+        user_preference: Array.isArray(data.user_preference) ? data.user_preference : [],
+        authorId: data.authorId ?? "",
+        authorName: data.authorName ?? "",
+        avatar: data.avatar ?? ""
+      });
+    }
+  }
+
+  return { data: favorites };
+};

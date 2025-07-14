@@ -1,7 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { fetchUserProfile, fetchUserPosts, fetchUserItineraries } from "./action";
+import {
+  fetchUserProfile,
+  fetchUserPosts,
+  fetchUserItineraries,
+  fetchUserFavorite,
+} from "./action";
 import PostDialog from "@/components/post-dialog";
 import { useAuth } from "../../../context/auth";
 import { Post } from "../../../type/post";
@@ -30,18 +35,22 @@ export default function ProfileClient({ userId }: ProfileClientProps) {
   const [userProfile, setUserProfile] = useState<any>(null);
   const [posts, setPosts] = useState<Post[]>([]);
   const [itinerary, setItinerary] = useState<ItineraryType[]>([]);
+  const [favItinerary, setFavItinerary] = useState<ItineraryType[]>([]);
   useEffect(() => {
     if (!userId) return;
 
     (async () => {
-      const [profile, userPosts, userItinerary] = await Promise.all([
-        fetchUserProfile(userId),
-        fetchUserPosts(userId),
-        fetchUserItineraries(userId),
-      ]);
+      const [profile, userPosts, userItinerary, userFavorite] =
+        await Promise.all([
+          fetchUserProfile(userId),
+          fetchUserPosts(userId),
+          fetchUserItineraries(userId),
+          fetchUserFavorite(userId),
+        ]);
       setUserProfile(profile);
       setPosts(userPosts);
       setItinerary(userItinerary);
+      setFavItinerary(userFavorite);
     })();
   }, [userId]);
 
@@ -145,7 +154,10 @@ export default function ProfileClient({ userId }: ProfileClientProps) {
           >
             {posts.map((post, index) => (
               <div key={post.id || index}>
-                <PostDialog postItem={post} allowEdit={currentUserId === userId} />
+                <PostDialog
+                  postItem={post}
+                  allowEdit={currentUserId === userId}
+                />
               </div>
             ))}
           </Masonry>
@@ -153,19 +165,47 @@ export default function ProfileClient({ userId }: ProfileClientProps) {
 
         {/* Itineraries Tab (placeholder for now) */}
         <TabsContent value="itineraries">
-          {itinerary.length > 0 ? itinerary.map((iti) => {
-            return <ItineraryCard key={iti.id} id={iti.id} title={iti.title} coverImages={iti.coverImage}/>
-          }) : 
-           <div className="text-center text-gray-500 py-12">
-            No Itinerary available yet.
-          </div>
-          }
+          {itinerary.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {itinerary.map((iti) => (
+                <ItineraryCard
+                  key={iti.id}
+                  id={iti.id}
+                  title={iti.title}
+                  tags={iti.tags}
+                  country={iti.country}
+                  favoriteCount={iti.favoriteCount}
+                  coverImages={iti.coverImage}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="text-center text-gray-500 py-12">
+              No Itinerary available yet.
+            </div>
+          )}
         </TabsContent>
 
         <TabsContent value="favourite">
-          <div className="text-center text-gray-500 py-12">
-            No favourite available yet.
-          </div>
+          {favItinerary.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {favItinerary.map((iti) => (
+                <ItineraryCard
+                  key={iti.id}
+                  id={iti.id}
+                  title={iti.title}
+                  tags={iti.tags}
+                  country={iti.country}
+                  favoriteCount={iti.favoriteCount}
+                  coverImages={iti.coverImage}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="text-center text-gray-500 py-12">
+              No favourite available yet.
+            </div>
+          )}
         </TabsContent>
       </Tabs>
     </div>

@@ -1,6 +1,6 @@
 "use server";
 
-import { getAuthorItineraries } from "../../../data/itinerary";
+import { getAuthorItineraries, getUserFavoriteItineraries } from "../../../data/itinerary";
 import { getAuthorPosts } from "../../../data/posts";
 import { getCurrentUsers, updateUserProfile } from "../../../data/users";
 
@@ -27,4 +27,9 @@ export async function saveUserProfile(uid: string, updates: {
   nickname?: string
 }) {
   await updateUserProfile(uid, updates);
+}
+
+export async function fetchUserFavorite(uid: string) {
+  const { data } = await getUserFavoriteItineraries(uid);
+  return data;
 }

@@ -1,3 +1,6 @@
+import { Timestamp } from "firebase/firestore";
+import { StringFormat } from "firebase/storage";
+
 export type ItineraryType = {
   id: string;
   description?: string;
@@ -9,6 +12,9 @@ export type ItineraryType = {
   itinerary: ActivityType[],
   user_preference?: string[],
   favoriteCount?: number,
+  avatar?: string,
+  authorName?: string,
+  created?: Timestamp,
 };
 
 export type ActivityType = {

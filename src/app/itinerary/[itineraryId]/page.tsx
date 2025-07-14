@@ -17,6 +17,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { formatTimestamp } from "@/lib/utils";
 
 export default async function ItineraryDetailPage({
   params,
@@ -40,6 +41,26 @@ export default async function ItineraryDetailPage({
 
   return (
     <div className="max-w-5xl mx-auto px-6 py-10 space-y-10">
+      <div className="flex items-center gap-4">
+        <Image
+          src={itinerary.avatar || "/default-avatar.png"}
+          alt="Author avatar"
+          width={48}
+          height={48}
+          className="w-12 h-12 rounded-full object-cover"
+        />
+        <div>
+          <p className="text-sm text-gray-700">Created by</p>
+          <p className="font-semibold text-gray-900">
+            {itinerary.authorName || "Anonymous"}
+          </p>
+          {itinerary.created && (
+            <p className="text-sm text-gray-500">
+              Created on {format(itinerary.created.toDate(), "PPP")}
+            </p>
+          )}
+        </div>
+      </div>
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
@@ -97,17 +118,14 @@ export default async function ItineraryDetailPage({
       {/* Days */}
       <div className="space-y-12">
         {itinerary.itinerary.map((day) => (
-          <div
-            key={day.day}
-            className="p-6 rounded-2xl border border-gray-200 bg-white shadow-md"
-          >
+          <div key={day.day} className="p-6 rounded-2xl bg-white shadow-md">
             <h2 className="text-2xl font-semibold text-gray-800 mb-4">
               Day {day.day}
             </h2>
 
-            {/* Images Carousel or Grid */}
+            {/* Images Carousel */}
             {day.images && day.images?.length > 0 && (
-              <Carousel className="mb-6 rounded-xl overflow-hidden shadow ring-1 ring-gray-200">
+              <Carousel className="mb-6 rounded-xl overflow-visible px-4">
                 <CarouselContent>
                   {day.images.map((img, idx) => {
                     const url = `https://firebasestorage.googleapis.com/v0/b/discover-ease-ee29d.firebasestorage.app/o/${encodeURIComponent(
@@ -121,13 +139,13 @@ export default async function ItineraryDetailPage({
                       >
                         <Dialog>
                           <DialogTrigger asChild>
-                            <button className="w-full focus:outline-none">
+                            <button className="w-full focus:outline-none hover:scale-105 transition-transform duration-300 ease-in-out rounded-lg overflow-hidden shadow-md">
                               <Image
                                 src={url}
                                 alt={`Day ${day.day} image ${idx + 1}`}
                                 width={600}
                                 height={400}
-                                className="object-cover w-full h-48 rounded-xl"
+                                className="object-cover w-full h-48 rounded-lg"
                               />
                             </button>
                           </DialogTrigger>
@@ -150,17 +168,24 @@ export default async function ItineraryDetailPage({
                 </CarouselContent>
                 {day.images && day.images.length! >= 4 && (
                   <>
-                    <CarouselPrevious />
-                    <CarouselNext />
+                    <CarouselPrevious className="text-gray-600 hover:text-gray-900" />
+                    <CarouselNext className="text-gray-600 hover:text-gray-900" />
                   </>
                 )}
               </Carousel>
             )}
 
-            {/* Activities */}
-            <ul className="list-disc list-inside text-gray-700 space-y-1 pl-4">
+            <ul className="relative pl-10 text-gray-700 space-y-8">
+              {/* The vertical dotted line spanning from first dot to last */}
+              <span className="absolute left-5 top-5 bottom-0 w-0.5 border-l border-dotted border-gray-300"></span>
+
               {day.activity.map((act, i) => (
-                <li key={i}>{act}</li>
+                <li key={i} className="relative">
+                  {/* Dot */}
+                  <span className="absolute left-0 top-1.5 w-3 h-3 bg-white border-2 border-primary rounded-full"></span>
+                  {/* Activity text */}
+                  <span className="ml-6">{act}</span>
+                </li>
               ))}
             </ul>
           </div>

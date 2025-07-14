@@ -1,5 +1,6 @@
 import "server-only";
 import { firestore } from "../firebase/server";
+import { Timestamp } from "firebase/firestore";
 import { Post } from "../type/post";
 type LikesByCountryDate = {
   [date: string]: {
@@ -25,7 +26,9 @@ export const getPosts = async () => {
       likeCount: data.likeCount ?? 0,
       viewCount: data.viewCount ?? 0,
       avatar: data.avatar ?? "",
-      user_preference:  Array.isArray(data.user_preference) ? data.user_preference : [],
+      user_preference: Array.isArray(data.user_preference)
+        ? data.user_preference
+        : [],
       created: data.created?.toDate().toISOString() ?? null,
       authorName: data.authorName ?? "",
     };
@@ -72,7 +75,7 @@ export const getPostById = async (postId: string) => {
   return postData;
 };
 
-export const getTopLikedPosts = async (limitCount: number = 3) => {
+export const getTopLikedPosts = async (limitCount: number = 5) => {
   const snap = await firestore
     .collection("posts")
     .orderBy("likeCount", "desc")
@@ -144,7 +147,7 @@ export const getLikesOverTimeByCountry = async () => {
 
       if (!likedAt) return;
 
-      const date = new Date(likedAt).toISOString().split("T")[0]; // "YYYY-MM-DD"
+      const date = new Date(likedAt).toISOString().split("T")[0];
 
       if (!grouped[date]) grouped[date] = {};
       if (!grouped[date][country]) grouped[date][country] = 0;
@@ -163,3 +166,79 @@ export const getLikesOverTimeByCountry = async () => {
 
   return chartData;
 };
+
+export async function getMostUsedTags(): Promise<
+  { tag: string; count: number }[]
+> {
+  const snapshot = await firestore.collection("posts").get();
+
+  const tagFrequency: Record<string, number> = {};
+
+  snapshot.forEach((doc) => {
+    const data = doc.data();
+    const tags: string[] = data.tags || [];
+
+    tags.forEach((tag) => {
+      const trimmed = tag.trim().toLowerCase();
+      tagFrequency[trimmed] = (tagFrequency[trimmed] || 0) + 1;
+    });
+  });
+
+  // Sort and return top 10 tags
+  return Object.entries(tagFrequency)
+    .map(([tag, count]) => ({ tag, count }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 5); // ✅ Top 10 by frequency
+}
+
+export async function getTagsForMonth(
+  yearMonth?: string
+): Promise<{ yearMonth: string; tagCount: Record<string, number> }> {
+  if (!yearMonth) {
+    const now = new Date();
+    yearMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(
+      2,
+      "0"
+    )}`;
+  }
+
+  const snapshot = await firestore.collection("posts").get();
+
+  const tagCount: Record<string, number> = {};
+
+  snapshot.forEach((doc) => {
+    const data = doc.data();
+    const tags: string[] = data.tags || [];
+
+    if (!tags.length) return;
+
+    const createdTimestamp = data.created;
+
+    let date: Date;
+    if (createdTimestamp instanceof Timestamp) {
+      date = createdTimestamp.toDate();
+    } else if (createdTimestamp?._seconds) {
+      date = new Date(createdTimestamp._seconds * 1000);
+    } else {
+      date = new Date(createdTimestamp);
+    }
+
+    if (isNaN(date.getTime())) {
+      console.warn("Invalid date in post", doc.id, data.created);
+      return;
+    }
+
+    const postYearMonth = `${date.getFullYear()}-${String(
+      date.getMonth() + 1
+    ).padStart(2, "0")}`;
+
+    if (postYearMonth !== yearMonth) return;
+
+    tags.forEach((tag) => {
+      const cleanedTag = tag.trim().toLowerCase();
+      tagCount[cleanedTag] = (tagCount[cleanedTag] || 0) + 1;
+    });
+  });
+  const data = { yearMonth: yearMonth, tagCount: tagCount };
+  return data;
+}
