@@ -4,8 +4,6 @@ import { useEffect, useState } from "react";
 import { EllipsisVertical, HeartIcon } from "lucide-react";
 import { Post } from "../../type/post";
 import { Card, CardContent, CardHeader } from "./ui/card";
-import NextImage from "next/image";
-
 import {
   Dialog,
   DialogContent,
@@ -31,23 +29,12 @@ import {
   deleteDoc,
   updateDoc,
   increment,
-  addDoc,
-  collection,
-  onSnapshot,
-  serverTimestamp,
 } from "firebase/firestore";
 import { auth, db } from "../../firebase/client";
 import LoginRegisterDialog from "./login-register-dialog";
-type Comment = {
-  id: string;
-  text: string;
-  userId: string;
-  userName: string;
-  createdAt?: {
-    seconds: number;
-    nanoseconds: number;
-  };
-};
+import { formatTimestamp } from "@/lib/utils";
+import CommentsSection from "./comments-section";
+
 export default function PostDialog({
   postItem,
   allowEdit = false,
@@ -55,8 +42,7 @@ export default function PostDialog({
   postItem: Post;
   allowEdit: boolean;
 }) {
-  const [comments, setComments] = useState<Comment[]>([]);
-  const [newComment, setNewComment] = useState("");
+
   const [isOpen, setIsOpen] = useState(false);
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(postItem.likeCount ?? 0);
@@ -78,25 +64,7 @@ export default function PostDialog({
     return () => unsubscribe();
   }, [postItem.id]);
 
-  useEffect(() => {
-    const commentsRef = collection(db, "posts", postItem.id, "comments");
-    const unsubscribe = onSnapshot(commentsRef, (snapshot) => {
-      const commentData = snapshot.docs.map((doc) => {
-        return {
-          id: doc.id,
-          ...(doc.data() as Omit<Comment, "id">), // type assertion here
-        };
-      });
 
-      setComments(
-        commentData.sort(
-          (a, b) => (b.createdAt?.seconds ?? 0) - (a.createdAt?.seconds ?? 0)
-        )
-      );
-    });
-
-    return () => unsubscribe();
-  }, [postItem.id]);
 
   useEffect(() => {
     if (isOpen) {
@@ -127,26 +95,7 @@ export default function PostDialog({
     }
   };
 
-  const handleCommentSubmit = async () => {
-    if (!user || !newComment.trim()) return;
 
-    const commentRef = collection(db, "posts", postItem.id, "comments");
-    await addDoc(commentRef, {
-      text: newComment.trim(),
-      userId: user.uid,
-      userName: user.displayName || "Anonymous",
-      createdAt: serverTimestamp(),
-    });
-
-    setNewComment("");
-  };
-
-  const handleDeleteComment = async (commentId: string) => {
-    if (!user) return;
-
-    const commentRef = doc(db, "posts", postItem.id, "comments", commentId);
-    await deleteDoc(commentRef);
-  };
 
   return (
     <Dialog key={postItem.id} onOpenChange={(open) => setIsOpen(open)}>
@@ -340,186 +289,10 @@ export default function PostDialog({
             {postItem.description}
           </DialogDescription>
 
-          {/* Comments */}
-          <div className="mt-6 border-t pt-5">
-            <h3 className="text-lg font-semibold mb-4">Comments</h3>
-
-            <div className="space-y-4 max-h-56 overflow-y-auto pr-2 bg-gray-50 rounded-md p-4 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
-              {comments.length === 0 && (
-                <p className="text-gray-500 text-sm italic">No comments yet.</p>
-              )}
-              {comments.map((comment) => {
-                const createdAtDate = comment.createdAt
-                  ? new Date(comment.createdAt.seconds * 1000)
-                  : null;
-
-                return (
-                  <div
-                    key={comment.id}
-                    className="flex justify-between items-start space-x-3"
-                  >
-                    <div className="flex-1">
-                      <div className="flex items-center space-x-2">
-                        <Link href={`/profile/${comment.userId}`}>
-                          <span className="font-semibold text-gray-900">
-                            {comment.userName}
-                          </span>
-                        </Link>
-                        {createdAtDate && (
-                          <span className="text-xs text-gray-400 italic ml-2">
-                            {formatTimestamp(createdAtDate)}
-                          </span>
-                        )}
-                      </div>
-                      <p className="mt-1 text-gray-700">{comment.text}</p>
-                    </div>
-                    {user?.uid === comment.userId && (
-                      <button
-                        onClick={() => handleDeleteComment(comment.id)}
-                        className="text-xs text-red-600 hover:text-red-800 transition"
-                        title="Delete comment"
-                      >
-                        Delete
-                      </button>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-
-            {user ? (
-              <div className="mt-5 flex items-center space-x-3">
-                <input
-                  type="text"
-                  placeholder="Add a comment..."
-                  value={newComment}
-                  onChange={(e) => setNewComment(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && handleCommentSubmit()}
-                  className="flex-1 border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-                <button
-                  onClick={handleCommentSubmit}
-                  className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition disabled:opacity-50"
-                  disabled={!newComment.trim()}
-                >
-                  Post
-                </button>
-              </div>
-            ) : (
-              <div className="mt-5 text-sm text-gray-500">
-                <LoginRegisterDialog
-                  icon={
-                    <span className="underline cursor-pointer">
-                      Login to comment
-                    </span>
-                  }
-                />
-              </div>
-            )}
-          </div>
+          <CommentsSection postId={postItem.id} />
         </div>
       </DialogContent>
     </Dialog>
   );
 }
-function DialogTriggerCard({
-  postItem,
-  userName,
-}: {
-  postItem: Post;
-  userName: string;
-}) {
-  // Example fixed max width for smaller image
-  const maxImageWidth = 280;
 
-  // You could calculate aspect ratio dynamically if you have width/height info
-  // For demo, assume width = maxImageWidth and height proportional, or fixed height:
-  const imageWidth = maxImageWidth;
-  const imageHeight = 180; // or calculate based on ratio
-
-  return (
-    <div
-      className="cursor-pointer rounded-md overflow-hidden flex flex-col items-center bg-transparent"
-      style={{ width: imageWidth }}
-    >
-      {/* Image */}
-      <div
-        style={{
-          width: imageWidth,
-          height: imageHeight,
-          position: "relative",
-        }}
-      >
-        <NextImage
-          src={`https://firebasestorage.googleapis.com/v0/b/discover-ease-ee29d.firebasestorage.app/o/${encodeURIComponent(
-            postItem.images?.[0] ?? ""
-          )}?alt=media`}
-          alt={postItem.title}
-          fill
-          style={{ objectFit: "contain" }}
-          sizes={`${imageWidth}px`}
-          className="rounded-md"
-          priority={true}
-        />
-      </div>
-
-      {/* Text below */}
-      <div className="w-full mt-2 px-2 flex justify-between items-center">
-        {/* Left: Avatar and Nickname */}
-        <div className="flex items-center gap-3">
-          {postItem.avatar && (
-            <div className="w-10 h-10 rounded-full overflow-hidden border border-gray-300">
-              <NextImage
-                src={postItem.avatar}
-                alt="Avatar"
-                width={40}
-                height={40}
-                className="object-cover rounded-full"
-              />
-            </div>
-          )}
-          <span className="text-sm text-gray-500 italic">{userName}</span>
-        </div>
-
-        {/* Right: Likes */}
-        <div className="flex items-center gap-1">
-          <HeartIcon className="w-5 h-5 text-red-500" />
-          <span className="text-sm font-semibold">
-            {postItem.likeCount ?? 0}
-          </span>
-        </div>
-      </div>
-
-      {/* Title below the nickname/likes */}
-      <h3 className="mt-1 text-lg font-bold text-blue-700 text-center px-2 truncate">
-        {postItem.title}
-      </h3>
-    </div>
-  );
-}
-function formatTimestamp(date: Date) {
-  const now = new Date();
-  const diffMs = now.getTime() - date.getTime();
-  const diffSeconds = Math.floor(diffMs / 1000);
-
-  if (diffSeconds < 60) {
-    return diffSeconds <= 1 ? "1 sec ago" : `${diffSeconds} secs ago`;
-  }
-
-  const diffMinutes = Math.floor(diffSeconds / 60);
-  if (diffMinutes < 60) {
-    return diffMinutes === 1 ? "1 min ago" : `${diffMinutes} mins ago`;
-  }
-
-  const diffHours = Math.floor(diffMinutes / 60);
-  if (diffHours < 24) {
-    return diffHours === 1 ? "1 hour ago" : `${diffHours} hours ago`;
-  }
-
-  // Older than 24 hours, show date like "Jul 13, 2025"
-  return date.toLocaleDateString(undefined, {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  });
-}
