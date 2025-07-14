@@ -34,7 +34,7 @@ export default function RootLayout({
       >
         <AuthProvider>
           <nav className="flex items-center justify-between x-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 2xl:px-70 h-24">
-            <Link href="/"className="flex items-center space-x-2">
+            <Link href="/" className="flex items-center space-x-2">
               <Image
                 src="/DiscoverEaseLogo.png"
                 alt="DiscoverEase Logo"
@@ -42,16 +42,13 @@ export default function RootLayout({
                 height={50}
               />
               <span className="text-xl font-bold">Discover Ease</span>
-              </Link>
+            </Link>
             <div className="flex items-center">
               <Link className="px-8 uppercase hover:underline" href="/">
                 Feed
               </Link>
               <Link className="px-8 uppercase hover:underline" href="/itinerary">
                 Itinerary
-              </Link>
-              <Link className="px-8 uppercase hover:underline" href="/trend">
-                Trend
               </Link>
               <Link className="px-8 uppercase hover:underline" href="/for-you">
                 For You
