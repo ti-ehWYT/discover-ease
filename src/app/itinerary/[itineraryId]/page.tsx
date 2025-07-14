@@ -1,7 +1,9 @@
 import { firestore } from "../../../../firebase/server";
 import { ItineraryType } from "../../../../type/itinerary";
 import Image from "next/image";
-
+import { format } from "date-fns";
+import FavoriteButton from "@/components/favorite-button";
+import EditButton from "./edit-button";
 import {
   Carousel,
   CarouselContent,
@@ -9,14 +11,12 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-
 import {
   Dialog,
   DialogContent,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import FavoriteButton from "@/components/favorite-button";
 
 type Props = {
   params: {
@@ -25,7 +25,7 @@ type Props = {
 };
 
 export default async function ItineraryDetailPage({ params }: Props) {
-  const { itineraryId } = await params;
+  const { itineraryId } = params;
   const docRef = firestore.collection("itineraries").doc(itineraryId);
   const snapshot = await docRef.get();
 
@@ -40,23 +40,38 @@ export default async function ItineraryDetailPage({ params }: Props) {
   const itinerary = snapshot.data() as ItineraryType;
 
   return (
-    <div className="max-w-4xl mx-auto px-8 py-12 bg-cream-50 rounded-3xl shadow-lg">
-      {/* Title & Favorites */}
-      <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-12 gap-6">
-        <h1 className="text-5xl font-extrabold tracking-tight text-gray-900 leading-tight drop-shadow-sm">
-          {itinerary.title}
-        </h1>
-        <div className="flex items-center gap-5 text-gray-700">
-          <p className="text-lg font-semibold">
-            Favorites: <span className="text-gray-900">{itinerary.favoriteCount ?? 0}</span>
+    <div className="max-w-5xl mx-auto px-6 py-10 space-y-10">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h1 className="text-4xl font-bold text-gray-900">{itinerary.title}</h1>
+          <p className="text-sm text-gray-500 mt-1">
+            Country: <span className="font-medium">{itinerary.country}</span> |{" "}
           </p>
-          <FavoriteButton itineraryId={itineraryId} />
         </div>
-      </header>
+        <div className="flex gap-2 items-center">
+          <FavoriteButton itineraryId={params.itineraryId} />
+          <EditButton itineraryId={params.itineraryId} authorId={itinerary.authorId ?? ''} />
+        </div>
+      </div>
+
+      {/* Tags */}
+      {itinerary.tags && itinerary.tags?.length > 0 && (
+        <div className="flex flex-wrap gap-2">
+          {itinerary.tags.map((tag, i) => (
+            <span
+              key={i}
+              className="bg-primary text-white text-sm px-3 py-1 rounded-full shadow"
+            >
+              #{tag}
+            </span>
+          ))}
+        </div>
+      )}
 
       {/* Cover Image */}
-      {Array.isArray(itinerary.coverImage) && itinerary.coverImage[0] && (
-        <div className="mb-12 rounded-2xl overflow-hidden shadow-xl ring-1 ring-gray-200">
+      {itinerary.coverImage?.[0] && (
+        <div className="rounded-xl overflow-hidden shadow-lg ring-1 ring-gray-200">
           <Image
             src={`https://firebasestorage.googleapis.com/v0/b/discover-ease-ee29d.firebasestorage.app/o/${encodeURIComponent(
               itinerary.coverImage[0]
@@ -71,58 +86,53 @@ export default async function ItineraryDetailPage({ params }: Props) {
       )}
 
       {/* Description */}
-      <p className="mb-16 max-w-3xl mx-auto text-gray-700 text-lg leading-relaxed tracking-wide whitespace-pre-line">
+      <p className="text-lg text-gray-700 leading-relaxed whitespace-pre-line max-w-3xl">
         {itinerary.description}
       </p>
 
-      {/* Itinerary Days */}
-      <section>
-        <h2 className="text-4xl font-semibold mb-10 border-b border-gray-300 pb-3 text-gray-800">
-          Itinerary Details
-        </h2>
-
+      {/* Days */}
+      <div className="space-y-12">
         {itinerary.itinerary.map((day) => (
-          <article
+          <div
             key={day.day}
-            className="mb-14 rounded-3xl border border-gray-200 p-8 shadow-md bg-gradient-to-br from-gray-50 to-cream-100 transition-transform hover:scale-[1.02] hover:shadow-lg"
+            className="p-6 rounded-2xl border border-gray-200 bg-white shadow-md"
           >
-            <h3 className="text-3xl font-semibold mb-6 text-gray-900 tracking-wide drop-shadow-sm">
+            <h2 className="text-2xl font-semibold text-gray-800 mb-4">
               Day {day.day}
-            </h3>
+            </h2>
 
-            {/* Carousel */}
-            {day.images && day.images.length > 0 && (
-              <Carousel className="mb-8 rounded-xl overflow-hidden shadow ring-1 ring-gray-200">
+            {/* Images Carousel or Grid */}
+            {day.images && day.images?.length > 0 && (
+              <Carousel className="mb-6 rounded-xl overflow-hidden shadow ring-1 ring-gray-200">
                 <CarouselContent>
                   {day.images.map((img, idx) => {
-                    const imageUrl = `https://firebasestorage.googleapis.com/v0/b/discover-ease-ee29d.firebasestorage.app/o/${encodeURIComponent(
+                    const url = `https://firebasestorage.googleapis.com/v0/b/discover-ease-ee29d.firebasestorage.app/o/${encodeURIComponent(
                       img
                     )}?alt=media`;
 
                     return (
                       <CarouselItem
                         key={idx}
-                        className="basis-full sm:basis-1/2 lg:basis-1/3 p-3"
+                        className="basis-full sm:basis-1/2 lg:basis-1/3 p-2"
                       >
                         <Dialog>
                           <DialogTrigger asChild>
-                            <button className="w-full focus:outline-none rounded-xl overflow-hidden shadow-md hover:scale-105 transition-transform duration-300 ease-in-out">
+                            <button className="w-full focus:outline-none">
                               <Image
-                                src={imageUrl}
+                                src={url}
                                 alt={`Day ${day.day} image ${idx + 1}`}
                                 width={600}
                                 height={400}
-                                className="object-cover w-full h-48 sm:h-56 rounded-xl"
+                                className="object-cover w-full h-48 rounded-xl"
                               />
                             </button>
                           </DialogTrigger>
-                          <DialogContent className="max-w-7xl p-0 bg-transparent border-none">
+                          <DialogContent className="max-w-5xl p-0 bg-transparent border-none">
                             <DialogTitle className="sr-only">
                               Day {day.day} Image {idx + 1}
                             </DialogTitle>
-
                             <Image
-                              src={imageUrl}
+                              src={url}
                               alt={`Day ${day.day} full image ${idx + 1}`}
                               width={1600}
                               height={1000}
@@ -134,26 +144,24 @@ export default async function ItineraryDetailPage({ params }: Props) {
                     );
                   })}
                 </CarouselContent>
-                {day.images.length >= 4 && (
+                {day.images && day.images.length! >= 4 && (
                   <>
-                    <CarouselPrevious className="text-gray-600 hover:text-gray-900" />
-                    <CarouselNext className="text-gray-600 hover:text-gray-900" />
+                    <CarouselPrevious />
+                    <CarouselNext />
                   </>
                 )}
               </Carousel>
             )}
 
-            {/* Activities list */}
-            <ul className="list-disc list-inside text-gray-800 text-lg leading-loose space-y-2 pl-6">
+            {/* Activities */}
+            <ul className="list-disc list-inside text-gray-700 space-y-1 pl-4">
               {day.activity.map((act, i) => (
-                <li key={i} className="hover:text-gray-900 transition-colors cursor-default">
-                  {act}
-                </li>
+                <li key={i}>{act}</li>
               ))}
             </ul>
-          </article>
+          </div>
         ))}
-      </section>
+      </div>
     </div>
   );
 }

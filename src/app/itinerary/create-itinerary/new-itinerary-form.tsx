@@ -11,7 +11,7 @@ import { ref, uploadBytesResumable } from "firebase/storage";
 import { saveItineraryImages } from "../action";
 import { storage, analytics } from "../../../../firebase/client";
 
-export default function NewitineraryForm() {
+export default function NewItineraryForm() {
   const auth = useAuth();
   const router = useRouter();
   const handleSubmit = async (data: z.infer<typeof itinerarySchema>) => {
@@ -48,12 +48,12 @@ export default function NewitineraryForm() {
       token,
     });
 
-    if (response.error || !response.ItineraryId) {
+    if (response.error || !response.itineraryId) {
       toast.error("Error", { description: response.message });
       return;
     }
 
-    const ItineraryId = response.ItineraryId;
+    const itineraryId = response.itineraryId;
 
     // ----------------------
     // ✅ Upload Cover Image
@@ -62,7 +62,7 @@ export default function NewitineraryForm() {
     const coverUploadTasks = data.coverImage.map((image, index) => {
       if (!image.file) return Promise.resolve();
 
-      const path = `itineraries/${ItineraryId}/cover/${Date.now()}-${index}-${
+      const path = `itineraries/${itineraryId}/cover/${Date.now()}-${index}-${
         image.file.name
       }`;
       coverPaths.push(path);
@@ -92,7 +92,7 @@ export default function NewitineraryForm() {
       day.images.forEach((image, j) => {
         if (!image.file) return;
 
-        const path = `itineraries/${ItineraryId}/day-${
+        const path = `itineraries/${itineraryId}/day-${
           day.day
         }/${Date.now()}-${j}-${image.file.name}`;
         dayImagePaths[i].push(path);
@@ -128,7 +128,7 @@ export default function NewitineraryForm() {
     // ✅ Save image paths to Firestore
     await saveItineraryImages(
       {
-        ItineraryId: ItineraryId,
+        itineraryId: itineraryId,
         images: {
           coverImage: coverPaths,
           itinerary: formatteditinerary,

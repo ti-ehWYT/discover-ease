@@ -7,6 +7,7 @@ export type ItineraryType = {
   tags?: string[];
   authorId?: string;
   itinerary: ActivityType[],
+  user_preference?: string[],
   favoriteCount?: number,
 };
 

@@ -18,6 +18,7 @@ export const getItineraries = async () => {
       coverImage: Array.isArray(data.coverImage) ? data.coverImage : [],
       tags: Array.isArray(data.tags) ? data.tags : [],
       itinerary: Array.isArray(data.itinerary) ? data.itinerary : [],
+      user_preference: Array.isArray(data.user_preference) ? data.user_preference : [],
       authorId: data.authorId ?? "",
     };
   });
@@ -42,9 +43,20 @@ export const getAuthorItineraries = async (uid: string) => {
       country: data.country ?? "",
       coverImage: Array.isArray(data.coverImage) ? data.coverImage : [],
       tags: Array.isArray(data.tags) ? data.tags : [],
+      user_preference: Array.isArray(data.user_preference) ? data.user_preference : [],
       itinerary: Array.isArray(data.itinerary) ? data.itinerary : [],
       authorId: data.authorId ?? "",
     };
   });
   return { data: itineraries };
+};
+
+
+export const getItineraryById = async (itineraryId: string) => {
+  const snap = await firestore.collection("itineraries").doc(itineraryId).get();
+  const itineraryData = {
+    id: itineraryId,
+    ...snap.data(),
+  } as ItineraryType;
+  return itineraryData;
 };

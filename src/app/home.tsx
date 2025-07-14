@@ -9,7 +9,6 @@ import Masonry from "react-masonry-css";
 
 export default function HomePage({ initialPosts }: { initialPosts: Post[] }) {
   const [filteredPosts, setFilteredPosts] = useState<Post[]>(initialPosts);
-
   const handleSearch = async (query: string) => {
     if (!query) {
       setFilteredPosts(initialPosts);

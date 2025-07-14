@@ -26,5 +26,5 @@ export const saveNewitinerary = async (data: any) => {
     authorId: verifiedToken.uid,
   });
 
-  return { ItineraryId: itineraryDoc.id };
+  return { itineraryId: itineraryDoc.id };
 }
