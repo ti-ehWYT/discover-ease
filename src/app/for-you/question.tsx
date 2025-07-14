@@ -54,14 +54,14 @@ export default function Question({ data }: { data: Post[] }) {
   const [answers, setAnswers] = useState<string[]>([]);
   const [finished, setFinished] = useState(false);
   const saved = Cookies.get("travelAnswers");
-  const userTag = saved ? JSON.parse(saved) : [];
+  const userPreference = saved ? JSON.parse(saved) : [];
 
   const taggedPosts = data.filter((post) =>
-    post.tags?.some((tag) => userTag.includes(tag))
+    post.user_preference?.some((prefer) => userPreference.includes(prefer))
   );
 
   const untaggedPosts = data.filter(
-    (post) => !post.tags?.some((tag) => userTag.includes(tag))
+    (post) => !post.user_preference?.some((prefer) => userPreference.includes(prefer))
   );
 
   const finalPosts =
@@ -172,7 +172,7 @@ export default function Question({ data }: { data: Post[] }) {
             </div>
           ))}
           {finalPosts.length === 0 && (
-            <div className="text-center col-span-full py-10 text-gray-500">
+            <div className="text-center col-span-full my-masonry-grid text-gray-500">
               No posts matched your preferences.
             </div>
           )}

@@ -16,7 +16,6 @@ export default function EditButton({
   if (auth?.currentUser?.uid === authorId) {
     return (
       <Link href={`/itinerary/edit-itinerary/${itineraryId}`}>
-        {" "}
         <EllipsisVertical className="text-gray-500 hover:text-gray-800" />{" "}
       </Link>
     );
