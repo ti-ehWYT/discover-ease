@@ -17,6 +17,7 @@ export default async function EditPost({ params }: { params: Promise<any> }) {
           id={post.id}
           title={post.title}
           description={post.description}
+          user_preference={post.user_preference}
           country={post.country}
           tags={post.tags}
           images={post.images || []}

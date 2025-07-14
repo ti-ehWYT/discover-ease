@@ -12,13 +12,13 @@ import {
   FormMessage,
 } from "./ui/form";
 import { Input } from "./ui/input";
-import { UserPreferenceMultiSelect } from "./user-preference-select";
 import { CountrySelect } from "./country-select";
 import { Button } from "./ui/button";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import MultiImageUploader, { ImageUpload } from "./multi-image-uploader";
 import DescriptionInput from "./description-input";
+import TagInputField from "./tag-input";
 
 type Props = {
   submitButtonLabel: React.ReactNode;
@@ -111,7 +111,12 @@ export default function ItineraryForm({
             </FormItem>
           )}
         />
-        <UserPreferenceMultiSelect control={form.control} name="tags" />
+        <TagInputField
+          name="tags"
+          control={form.control}
+          label="Tags"
+          placeholder="Type tag and press space or Enter"
+        />
         <CountrySelect control={form.control} name="country" />
         {form.watch("itinerary").map((item, index) => (
           <div key={index} className="border p-4 my-4 rounded-lg space-y-4">
