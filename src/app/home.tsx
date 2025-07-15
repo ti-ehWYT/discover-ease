@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { Post } from "../../type/post";
 import PostDialog from "@/components/post-dialog";
-import { getSearchRanking } from "../../data/trend";
 import SearchBar from "@/components/search-bar";
 import { incrementCountrySearch } from "../../data/trend";
 import Masonry from "react-masonry-css";
@@ -46,7 +45,7 @@ export default function HomePage({
 
         <div className="flex flex-1 items-center gap-4 bg-white mb-2">
           <h3 className="font-semibold text-gray-700 whitespace-nowrap">
-            Top Searched:
+            People are Searching:
           </h3>
           <div className="flex gap-3">
             {searchRanking.map((item, index) => (

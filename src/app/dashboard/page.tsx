@@ -3,12 +3,11 @@ import {
   getTopLikedPosts,
   getMostViewPosts,
 } from "../../../data/posts";
-import { getSearchRanking } from "../../../data/trend";
 import MostUsedTagAllTime from "./most-used-tags-all-time";
 import MostUsedTagByMonth from "./most-used-tags-by-month";
+import SearchedRanking from "./search-ranking";
 
 export default async function Dashboard() {
-  const searchRanking = await getSearchRanking();
   const topLikedPosts = await getTopLikedPosts();
   const likeOverTimeCountry = await getLikesOverTimeByCountry();
   const mostViewedPost = await getMostViewPosts();
@@ -27,16 +26,16 @@ export default async function Dashboard() {
       </div>
 
       {/* You can add more sections like this below */}
-      {/* 
+      
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="bg-white dark:bg-muted rounded-xl shadow p-4">
-          <YourNextChartComponent />
+          <SearchedRanking />
         </div>
-        <div className="bg-white dark:bg-muted rounded-xl shadow p-4">
+        {/* <div className="bg-white dark:bg-muted rounded-xl shadow p-4">
           <AnotherChartComponent />
-        </div>
+        </div> */}
       </div> 
-      */}
+     
     </div>
   );
 }

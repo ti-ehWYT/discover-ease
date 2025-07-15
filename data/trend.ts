@@ -33,13 +33,39 @@ export const getSearchRanking = async () => {
     .limit(10)
     .get();
 
-const data = snap.docs.map((doc) => {
+  const data = snap.docs.map((doc) => {
     const docData = doc.data();
     return {
       country: doc.id,
-      count: typeof docData.count === "number" ? docData.count : 0, // enforce type
+      count: typeof docData.count === "number" ? docData.count : 0,
     };
   });
 
   return data;
+};
+
+export const getLatestSearchRanking = async () => {
+  const now = new Date();
+  const oneMonthAgo = new Date();
+  oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1); 
+
+  const snap = await firestore
+    .collection("searchRanking")
+    .where("updatedAt", ">=", oneMonthAgo) 
+    .orderBy("updatedAt", "desc") 
+    .get();
+
+  const data = snap.docs.map((doc) => {
+    const docData = doc.data();
+    return {
+      country: doc.id,
+      count: typeof docData.count === "number" ? docData.count : 0,
+      updatedAt: docData.updatedAt?.toDate?.() || null,
+    };
+  });
+    const topSearched = data
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 3); 
+
+  return topSearched;
 };
