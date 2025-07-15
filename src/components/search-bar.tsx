@@ -58,10 +58,10 @@ export default function SearchBar({
     }
   }, [query]);
   return (
-    <div className="relative flex justify-center mt-4 mb-6">
+    <div className="relative flex mt-4 mb-6">
       <form
         onSubmit={handleSubmit}
-        className="flex w-full max-w-md items-center gap-2"
+        className="flex w-full items-center gap-2"
       >
         <div className="relative w-full">
           <Input

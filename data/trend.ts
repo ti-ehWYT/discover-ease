@@ -33,10 +33,13 @@ export const getSearchRanking = async () => {
     .limit(10)
     .get();
 
-  const data = snap.docs.map((doc) => ({
-    country: doc.id,
-    ...doc.data(),
-  }));
+const data = snap.docs.map((doc) => {
+    const docData = doc.data();
+    return {
+      country: doc.id,
+      count: typeof docData.count === "number" ? docData.count : 0, // enforce type
+    };
+  });
 
   return data;
 };
