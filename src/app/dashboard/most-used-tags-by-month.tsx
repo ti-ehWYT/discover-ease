@@ -1,7 +1,7 @@
 "use client";
 
+import { apiFetch } from "@/lib/apiFetch";
 import React, { useEffect, useState } from "react";
-import { fetchMostUsedTagByMonth } from "./action";
 import {
   BarChart,
   Bar,
@@ -27,23 +27,30 @@ export default function MostUsedTagByMonth() {
   const [tags, setTags] = useState<TagData[]>([]);
   const [yearMonth, setYearMonth] = useState(() => {
     const now = new Date();
-    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(
+      2,
+      "0"
+    )}`;
   });
 
   useEffect(() => {
-    (async () => {
-      try {
-        const data = await fetchMostUsedTagByMonth(yearMonth);
-        const tagsArray = Object.entries(data?.tagCount ?? {}).map(([tag, count]) => ({
-          tag,
-          count: Number(count),
-        }));
-        setTags(tagsArray);
-      } catch (err) {
-        console.error(err);
-        setTags([]);
-      }
-    })();
+    apiFetch(`/api/dashboard/most-used-tag-by-month?yearMonth=${yearMonth}`, {
+      successMessage: "Most used tag by month loaded successfully!",
+      errorMessage: "Failed to load Most used tag by month",
+    }).then((data) => {
+       const tagsArray = Object.entries(data.tagCount ?? {}).map(
+          ([tag, count]) => ({
+            tag,
+            count: Number(count),
+          })
+        );
+      setTags(tagsArray)
+    })
+    .catch((err) => {
+      console.error(err);
+      setTags([]);
+    })
+
   }, [yearMonth]);
 
   return (
@@ -68,10 +75,15 @@ export default function MostUsedTagByMonth() {
 
       {/* Chart / fallback */}
       {tags.length === 0 ? (
-        <p className="text-center text-gray-500">No tags found for this period.</p>
+        <p className="text-center text-gray-500">
+          No tags found for this period.
+        </p>
       ) : (
         <ResponsiveContainer width="100%" height={320}>
-          <BarChart data={tags} margin={{ top: 10, right: 24, left: 0, bottom: 32 }}>
+          <BarChart
+            data={tags}
+            margin={{ top: 10, right: 24, left: 0, bottom: 32 }}
+          >
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis
               dataKey="tag"
@@ -83,7 +95,10 @@ export default function MostUsedTagByMonth() {
             />
             <YAxis allowDecimals={false} tick={{ fontSize: 12 }} />
             <Tooltip
-              formatter={(v: number) => [`${v} use${v > 1 ? "s" : ""}`, "Count"]}
+              formatter={(v: number) => [
+                `${v} use${v > 1 ? "s" : ""}`,
+                "Count",
+              ]}
             />
             <Bar
               dataKey="count"

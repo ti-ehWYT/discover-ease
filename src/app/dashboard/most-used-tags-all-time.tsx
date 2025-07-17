@@ -1,5 +1,6 @@
 "use client";
 
+import { apiFetch } from "@/lib/apiFetch";
 import React, { useEffect, useState } from "react";
 import {
   PieChart,
@@ -16,35 +17,38 @@ type MostUseTagType = {
 };
 
 const COLORS = [
-  "#22c55e", "#4ade80", "#16a34a", "#84cc16", "#f59e0b",
-  "#f97316", "#ef4444", "#3b82f6", "#8b5cf6", "#ec4899",
+  "#22c55e",
+  "#4ade80",
+  "#16a34a",
+  "#84cc16",
+  "#f59e0b",
+  "#f97316",
+  "#ef4444",
+  "#3b82f6",
+  "#8b5cf6",
+  "#ec4899",
 ];
 
 export default function MostUsedTagAllTime() {
   const [tags, setTags] = useState<MostUseTagType[]>([]);
 
   useEffect(() => {
-    const fetchMostUsedTagAllTime = async () => {
-      const res = await fetch("/api/dashboard/most-used-tags-all-time");
-      try {
-        if(!res.ok) {
-          throw new Error("Failed to fetch most used tag all time");
-        }
-        const data: MostUseTagType[] = await res.json();
+    apiFetch("/api/dashboard/most-used-tags-all-time", {
+      successMessage: "Most used tag loaded successfully!",
+      errorMessage: "Failed to load Most used tag",
+    })
+      .then((data) => {
         setTags(data);
-      }catch (error) {
-        console.error("Error fetching most used tag all time:", error);
+      })
+      .catch((err) => {
+        console.error(err);
         setTags([]);
-      }
-    }
-    fetchMostUsedTagAllTime();
+      });
   }, []);
 
   return (
     <div className="bg-white dark:bg-muted rounded-xl p-6">
-      <h2 className="text-2xl font-bold mb-1 text-center">
-        Most Used Tags
-      </h2>
+      <h2 className="text-2xl font-bold mb-1 text-center">Most Used Tags</h2>
       <p className="text-sm text-muted-foreground mb-4 text-center">
         (All Time)
       </p>
@@ -67,10 +71,7 @@ export default function MostUsedTagAllTime() {
               }
             >
               {tags.map((_, idx) => (
-                <Cell
-                  key={`cell-${idx}`}
-                  fill={COLORS[idx % COLORS.length]}
-                />
+                <Cell key={`cell-${idx}`} fill={COLORS[idx % COLORS.length]} />
               ))}
             </Pie>
 

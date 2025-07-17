@@ -1,8 +1,10 @@
 import { NextResponse } from "next/server";
 import { getMostUsedTags } from "../../../../../data/dashboard";
+import { apiHandler } from "@/lib/apiHandler";
 
-export async function GET() {
+export const GET = apiHandler({
+  GET: async () => {
     const data = await getMostUsedTags();
-
     return NextResponse.json(data);
-}
+  },
+});

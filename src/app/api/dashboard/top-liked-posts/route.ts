@@ -1,8 +1,10 @@
 import { NextResponse } from "next/server";
 import { getTopLikedPosts } from "../../../../../data/dashboard";
+import { apiHandler } from "@/lib/apiHandler";
 
-export async function GET() {
-  const result = await getTopLikedPosts();
-  
-  return NextResponse.json(result.data);  
-}
+export const GET = apiHandler({
+  GET: async () => {
+    const result = await getTopLikedPosts();
+    return NextResponse.json(result.data);
+  },
+});

@@ -12,22 +12,23 @@ import {
   CartesianGrid,
   ResponsiveContainer,
 } from "recharts";
+import { apiFetch } from "@/lib/apiFetch";
 
 export default function TopLikedPosts() {
   const [posts, setPosts] = useState<Post[]>([]);
 
   useEffect(() => {
-    const fetchTopLikedPosts = async () => {
-      try {
-        const res = await fetch("/api/dashboard/top-liked-posts");
-        const data = await res.json();
+    apiFetch("/api/dashboard/top-liked-posts", {
+      successMessage: "Top liked posts loaded successfully!",
+      errorMessage: "Failed to load Top liked posts",
+    })
+      .then((data) => {
         setPosts(data);
-      } catch (error) {
-        console.error("Failed to fetch top liked posts:", error);
-      }
-    };
-
-    fetchTopLikedPosts();
+      })
+      .catch((err) => {
+        console.error(err);
+        setPosts([]);
+      });;
   }, []);
 
   const chartData = posts.map((post) => ({
@@ -43,7 +44,10 @@ export default function TopLikedPosts() {
         <p className="text-center text-gray-500">No data available.</p>
       ) : (
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={chartData} margin={{ top: 20, right: 30, left: 10, bottom: 5 }}>
+          <BarChart
+            data={chartData}
+            margin={{ top: 20, right: 30, left: 10, bottom: 5 }}
+          >
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="title" />
             <YAxis />

@@ -11,6 +11,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { apiFetch } from "@/lib/apiFetch";
 
 type SearchRankingItem = {
   country: string;
@@ -21,21 +22,17 @@ export default function SearchedRanking() {
   const [ranking, setRanking] = useState<SearchRankingItem[]>([]);
 
   useEffect(() => {
-    const fetchSearchRanking = async () => {
-      try {
-        const res = await fetch("/api/dashboard/search-ranking");
-        if (!res.ok) {
-          throw new Error("Failed to fetch search ranking");
-        }
-        const data: SearchRankingItem[] = await res.json();
+    apiFetch("/api/dashboard/search-ranking", {
+      successMessage: "Search Ranking loaded successfully!",
+      errorMessage: "Failed to load Search Ranking",
+    })
+      .then((data) => {
         setRanking(data);
-      } catch (error) {
-        console.error("Error fetching search ranking:", error);
+      })
+      .catch((err) => {
+        console.error(err)
         setRanking([]);
-      }
-    };
-
-    fetchSearchRanking();
+      });
   }, []);
   const totalSearches = ranking.reduce((sum, item) => sum + item.count, 0);
 
@@ -52,7 +49,9 @@ export default function SearchedRanking() {
         <p className="text-center text-gray-500">No data available.</p>
       ) : (
         <Table>
-          <TableCaption>A list of countries users searched the most.</TableCaption>
+          <TableCaption>
+            A list of countries users searched the most.
+          </TableCaption>
           <TableHeader>
             <TableRow>
               <TableHead className="w-[100px]">#</TableHead>
