@@ -1,6 +1,5 @@
 "use client";
 
-import { fetchSearchRanking } from "./action";
 import React, { useEffect, useState } from "react";
 import {
   Table,
@@ -22,21 +21,26 @@ export default function SearchedRanking() {
   const [ranking, setRanking] = useState<SearchRankingItem[]>([]);
 
   useEffect(() => {
-    (async () => {
+    const fetchSearchRanking = async () => {
       try {
-        const data = await fetchSearchRanking();
+        const res = await fetch("/api/dashboard/search-ranking");
+        if (!res.ok) {
+          throw new Error("Failed to fetch search ranking");
+        }
+        const data: SearchRankingItem[] = await res.json();
         setRanking(data);
       } catch (error) {
-        console.error("Failed to fetch search ranking:", error);
+        console.error("Error fetching search ranking:", error);
         setRanking([]);
       }
-    })();
-  }, []);
+    };
 
+    fetchSearchRanking();
+  }, []);
   const totalSearches = ranking.reduce((sum, item) => sum + item.count, 0);
 
   return (
-    <div className="bg-white dark:bg-muted rounded-xl p-6 shadow-md">
+    <div className="bg-white dark:bg-muted rounded-xl p-6">
       <h2 className="text-2xl font-bold mb-1 text-center">
         Popular Searched Country
       </h2>

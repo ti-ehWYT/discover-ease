@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { fetchMostUsedTagAllTime } from "./action";
 import {
   PieChart,
   Pie,
@@ -25,15 +24,20 @@ export default function MostUsedTagAllTime() {
   const [tags, setTags] = useState<MostUseTagType[]>([]);
 
   useEffect(() => {
-    (async () => {
+    const fetchMostUsedTagAllTime = async () => {
+      const res = await fetch("/api/dashboard/most-used-tags-all-time");
       try {
-        const data = await fetchMostUsedTagAllTime();
+        if(!res.ok) {
+          throw new Error("Failed to fetch most used tag all time");
+        }
+        const data: MostUseTagType[] = await res.json();
         setTags(data);
-      } catch (err) {
-        console.error(err);
+      }catch (error) {
+        console.error("Error fetching most used tag all time:", error);
         setTags([]);
       }
-    })();
+    }
+    fetchMostUsedTagAllTime();
   }, []);
 
   return (

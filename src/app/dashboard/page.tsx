@@ -2,10 +2,11 @@ import {
   getLikesOverTimeByCountry,
   getTopLikedPosts,
   getMostViewPosts,
-} from "../../../data/posts";
+} from "../../../data/dashboard";
 import MostUsedTagAllTime from "./most-used-tags-all-time";
 import MostUsedTagByMonth from "./most-used-tags-by-month";
 import SearchedRanking from "./search-ranking";
+import TopLikedPosts from "./top-liked-posts";
 
 export default async function Dashboard() {
   const topLikedPosts = await getTopLikedPosts();
@@ -31,9 +32,9 @@ export default async function Dashboard() {
         <div className="bg-white dark:bg-muted rounded-xl shadow p-4">
           <SearchedRanking />
         </div>
-        {/* <div className="bg-white dark:bg-muted rounded-xl shadow p-4">
-          <AnotherChartComponent />
-        </div> */}
+        <div className="bg-white dark:bg-muted rounded-xl shadow p-4">
+          <TopLikedPosts />
+        </div>
       </div> 
      
     </div>

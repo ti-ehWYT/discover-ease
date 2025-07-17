@@ -1,5 +1,4 @@
 import { Timestamp } from "firebase/firestore";
-import { StringFormat } from "firebase/storage";
 
 export type ItineraryType = {
   id: string;
