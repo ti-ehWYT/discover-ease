@@ -1,62 +1,69 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { Post } from "../../../type/post";
+import * as React from "react";
+import { useEffect, useState } from "react";
+import { Card, CardContent } from "@/components/ui/card";
 import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  Tooltip,
-  Legend,
-  CartesianGrid,
-  ResponsiveContainer,
-} from "recharts";
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 import { apiFetch } from "@/lib/apiFetch";
+import { Post } from "../../../type/post";
 
-export default function TopLikedPosts() {
+export default function TopLikedPostsCarousel() {
   const [posts, setPosts] = useState<Post[]>([]);
 
   useEffect(() => {
     apiFetch("/api/dashboard/top-liked-posts", {
       successMessage: "Top liked posts loaded successfully!",
-      errorMessage: "Failed to load Top liked posts",
+      errorMessage: "Failed to load posts",
     })
-      .then((data) => {
-        setPosts(data);
-      })
-      .catch((err) => {
-        console.error(err);
+      .then((data) => setPosts(data.slice(0, 3)))
+      .catch((error) => {
+        console.error(error);
         setPosts([]);
-      });;
+      });
   }, []);
 
-  const chartData = posts.map((post) => ({
-    title: post.title.length > 20 ? post.title.slice(0, 20) + "…" : post.title,
-    likeCount: post.likeCount || 0,
-    viewCount: post.viewCount || 0,
-  }));
-
   return (
-    <div className="bg-white dark:bg-muted rounded-xl p-6 w-full h-[400px]">
-      <h2 className="text-2xl font-bold mb-4 text-center">Top Liked Posts</h2>
-      {chartData.length === 0 ? (
-        <p className="text-center text-gray-500">No data available.</p>
+    <div className="bg-white dark:bg-muted rounded-xl p-6 w-full">
+      <h2 className="text-2xl font-bold mb-4 text-center">Top 3 Liked Posts This Week</h2>
+
+      {posts.length === 0 ? (
+        <p className="text-center text-gray-500">No posts available.</p>
       ) : (
-        <ResponsiveContainer width="100%" height="100%">
-          <BarChart
-            data={chartData}
-            margin={{ top: 20, right: 30, left: 10, bottom: 5 }}
-          >
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="title" />
-            <YAxis />
-            <Tooltip />
-            <Legend />
-            <Bar dataKey="likeCount" fill="#8884d8" name="Likes" />
-            <Bar dataKey="viewCount" fill="#82ca9d" name="Views" />
-          </BarChart>
-        </ResponsiveContainer>
+        <Carousel opts={{ align: "start" }} className="w-full max-w-3xl mx-auto">
+          <CarouselContent>
+            {posts.map((post, index) => (
+              <CarouselItem key={index} className="md:basis-full lg:basis-1/2">
+                <div className="p-2">
+                  <Card className="h-full">
+                    <CardContent className="p-6 flex flex-col justify-center">
+                      <h3 className="text-xl font-semibold mb-2 text-center">
+                        {post.title.length > 40
+                          ? post.title.slice(0, 40) + "…"
+                          : post.title}
+                      </h3>
+                      <p className="text-center text-gray-600 text-sm mb-1">
+                        {post.likeCount} Likes • {post.viewCount} Views
+                      </p>
+                      <p className="text-sm text-muted-foreground text-center">
+                        {post.description
+                          ? post.description.slice(0, 100)
+                          : "No description available."}
+                      </p>
+                    </CardContent>
+                  </Card>
+                </div>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <CarouselPrevious />
+          <CarouselNext />
+        </Carousel>
       )}
     </div>
   );

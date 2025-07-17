@@ -54,7 +54,7 @@ export default function SearchedRanking() {
           </TableCaption>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-[100px]">#</TableHead>
+              <TableHead className="w-[100px] text-center">#</TableHead>
               <TableHead className="text-center">Country</TableHead>
               <TableHead className="text-center">Search Count</TableHead>
             </TableRow>
@@ -62,7 +62,7 @@ export default function SearchedRanking() {
           <TableBody>
             {ranking.map((item, index) => (
               <TableRow key={item.country}>
-                <TableCell>{index + 1}</TableCell>
+                <TableCell className="text-center">{index + 1}</TableCell>
                 <TableCell className="text-center">{item.country}</TableCell>
                 <TableCell className="text-center">{item.count}</TableCell>
               </TableRow>
@@ -70,8 +70,9 @@ export default function SearchedRanking() {
           </TableBody>
           <TableFooter>
             <TableRow>
-              <TableCell colSpan={2}>Total</TableCell>
-              <TableCell className="text-right">{totalSearches}</TableCell>
+              <TableCell className="text-center" >Total</TableCell>
+              <TableCell />
+              <TableCell className="text-center">{totalSearches}</TableCell>
             </TableRow>
           </TableFooter>
         </Table>

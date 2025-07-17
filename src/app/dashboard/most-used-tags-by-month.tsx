@@ -33,18 +33,18 @@ export default function MostUsedTagByMonth() {
       successMessage: "Most used tag by month loaded successfully!",
       errorMessage: "Failed to load Most used tag by month",
     }).then((data) => {
-       const tagsArray = Object.entries(data.tagCount ?? {}).map(
-          ([tag, count]) => ({
-            tag,
-            count: Number(count),
-          })
-        );
+      const tagsArray = Object.entries(data.tagCount ?? {}).map(
+        ([tag, count]) => ({
+          tag,
+          count: Number(count),
+        })
+      );
       setTags(tagsArray)
     })
-    .catch((err) => {
-      console.error(err);
-      setTags([]);
-    })
+      .catch((err) => {
+        console.error(err);
+        setTags([]);
+      })
 
   }, [yearMonth]);
 
@@ -77,7 +77,7 @@ export default function MostUsedTagByMonth() {
         <ResponsiveContainer width="100%" height={320}>
           <BarChart
             data={tags}
-            margin={{ top: 10, right: 24, left: 0, bottom: 32 }}
+            margin={{ top: 10, right: 24, left: -30, bottom: 32 }}
           >
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis
@@ -104,6 +104,9 @@ export default function MostUsedTagByMonth() {
           </BarChart>
         </ResponsiveContainer>
       )}
+      <p className="text-center text-gray-500 text-sm mt-4">
+        Tags used by users when creating posts. This helps identify tag usage trends.
+      </p>
     </div>
   );
 }
