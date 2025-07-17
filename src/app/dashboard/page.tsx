@@ -27,12 +27,12 @@ export default async function Dashboard() {
 
       {/* You can add more sections like this below */}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="bg-white dark:bg-muted rounded-xl shadow p-4">
+      <div className="grid grid-cols-1 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <div className="bg-white dark:bg-muted rounded-xl shadow p-4 col-span-1">
             <MostUsedTagAllTime />
           </div>
-          <div className="bg-white dark:bg-muted rounded-xl shadow p-4">
+          <div className="bg-white dark:bg-muted rounded-xl shadow p-4 md:col-span-2">
             <TopLikedPosts />
           </div>
         </div>
