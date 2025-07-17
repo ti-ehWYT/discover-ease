@@ -33,10 +33,7 @@ export default function MostUsedTagAllTime() {
   const [tags, setTags] = useState<MostUseTagType[]>([]);
 
   useEffect(() => {
-    apiFetch("/api/dashboard/most-used-tags-all-time", {
-      successMessage: "Most used tag loaded successfully!",
-      errorMessage: "Failed to load Most used tag",
-    })
+    apiFetch("/api/dashboard/most-used-tags-all-time")
       .then((data) => {
         setTags(data);
       })

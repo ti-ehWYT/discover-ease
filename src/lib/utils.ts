@@ -32,3 +32,14 @@ export function formatTimestamp(date: Date) {
     day: "numeric",
   });
 }
+
+
+export function groupByYearMonth(date: Date): string {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
+}
+
+export function niceMonthLabel(ym: string) {
+  const [y, m] = ym.split("-");
+  const d = new Date(Number(y), Number(m) - 1, 1);
+  return d.toLocaleDateString(undefined, { month: "long", year: "numeric" });
+}

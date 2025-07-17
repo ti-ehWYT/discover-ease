@@ -1,6 +1,7 @@
 "use client";
 
 import { apiFetch } from "@/lib/apiFetch";
+import { niceMonthLabel } from "@/lib/utils";
 import React, { useEffect, useState } from "react";
 import {
   BarChart,
@@ -16,12 +17,6 @@ type TagData = {
   tag: string;
   count: number;
 };
-
-function niceMonthLabel(ym: string) {
-  const [y, m] = ym.split("-");
-  const d = new Date(Number(y), Number(m) - 1, 1);
-  return d.toLocaleDateString(undefined, { month: "long", year: "numeric" });
-}
 
 export default function MostUsedTagByMonth() {
   const [tags, setTags] = useState<TagData[]>([]);

@@ -2,6 +2,7 @@ import "server-only";
 import { firestore } from "../firebase/server";
 import { Timestamp } from "firebase/firestore";
 import { Post } from "../type/post";
+import { groupByYearMonth } from "@/lib/utils";
 
 
 type LikesByCountryDate = {
@@ -9,6 +10,19 @@ type LikesByCountryDate = {
     [country: string]: number;
   };
 };
+
+
+function toValidDate(input: any): Date | null {
+  if (input instanceof Timestamp) {
+    return input.toDate();
+  }
+  if (input?._seconds) {
+    return new Date(input._seconds * 1000);
+  }
+  const d = new Date(input);
+  return isNaN(d.getTime()) ? null : d;
+}
+
 export const getSearchRanking = async () => {
     const snap = await firestore.collection("searchRanking").orderBy("count", "desc")
     .limit(10)
@@ -190,4 +204,101 @@ export async function getTagsForMonth(
   });
   const data = { yearMonth: yearMonth, tagCount: tagCount };
   return data;
+}
+
+export async function getMonthlyEngagement(yearMonth?: string) {
+  const result: Record<
+    string,
+    { createdPost: number; createdItinerary: number; likes: number; comments: number; favorites: number }
+  > = {};
+
+  function getYM(date: Date) {
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
+  }
+
+  function isInFilter(date: Date): boolean {
+    return !yearMonth || getYM(date) === yearMonth;
+  }
+
+  // Posts
+  const postSnap = await firestore.collection("posts").get();
+  for (const postDoc of postSnap.docs) {
+    const postData = postDoc.data();
+    const postId = postDoc.id;
+
+    const createdAt = toValidDate(postData.created);
+    const ym = createdAt ? getYM(createdAt) : null;
+
+    if (createdAt && isInFilter(createdAt)) {
+      if (!result[ym!]) result[ym!] = { createdPost: 0, createdItinerary: 0, likes: 0, comments: 0, favorites: 0 };
+      result[ym!].createdPost++;
+    }
+
+    const likeSnap = await firestore.collection("posts").doc(postId).collection("likes").get();
+    likeSnap.forEach((likeDoc) => {
+      const likedAt = toValidDate(likeDoc.data().likedAt);
+      const ym = likedAt ? getYM(likedAt) : null;
+      if (likedAt && isInFilter(likedAt)) {
+        if (!result[ym!]) result[ym!] = { createdPost: 0, createdItinerary: 0, likes: 0, comments: 0, favorites: 0 };
+        result[ym!].likes++;
+      }
+    });
+
+    const commentSnap = await firestore.collection("posts").doc(postId).collection("comments").get();
+    commentSnap.forEach((commentDoc) => {
+      const commentAt = toValidDate(commentDoc.data().createdAt);
+      const ym = commentAt ? getYM(commentAt) : null;
+      if (commentAt && isInFilter(commentAt)) {
+        if (!result[ym!]) result[ym!] = { createdPost: 0, createdItinerary: 0, likes: 0, comments: 0, favorites: 0 };
+        result[ym!].comments++;
+      }
+    });
+  }
+
+  // Itineraries
+  const itinSnap = await firestore.collection("itineraries").get();
+  for (const itinDoc of itinSnap.docs) {
+    const itinData = itinDoc.data();
+    const createdAt = toValidDate(itinData.created);
+    const ym = createdAt ? getYM(createdAt) : null;
+
+    if (createdAt && isInFilter(createdAt)) {
+      if (!result[ym!]) result[ym!] = { createdPost: 0, createdItinerary: 0, likes: 0, comments: 0, favorites: 0 };
+      result[ym!].createdItinerary++;
+    }
+
+    const favSnap = await firestore.collection("itineraries").doc(itinDoc.id).collection("favorites").get();
+    favSnap.forEach((favDoc) => {
+      const favoritedAt = toValidDate(favDoc.data().favoritedAt);
+      const ym = favoritedAt ? getYM(favoritedAt) : null;
+      if (favoritedAt && isInFilter(favoritedAt)) {
+        if (!result[ym!]) result[ym!] = { createdPost: 0, createdItinerary: 0, likes: 0, comments: 0, favorites: 0 };
+        result[ym!].favorites++;
+      }
+    });
+  }
+
+  // Format result
+  const formatted = Object.entries(result).map(([month, stats]) => {
+    const totalEngagement =
+      stats.createdPost + stats.createdItinerary + stats.likes + stats.comments + stats.favorites;
+    return { month, ...stats, totalEngagement };
+  });
+
+  if (yearMonth) {
+    const found = formatted.find((item) => item.month === yearMonth);
+    return (
+      found ?? {
+        month: yearMonth,
+        createdPost: 0,
+        createdItinerary: 0,
+        likes: 0,
+        comments: 0,
+        favorites: 0,
+        totalEngagement: 0,
+      }
+    );
+  } else {
+    return formatted.sort((a, b) => a.month.localeCompare(b.month)); // ascending by month
+  }
 }
