@@ -77,7 +77,22 @@ export const getMostViewPosts = async (limitCount: number = 5) => {
 export const getLikesOverTimeByCountry = async () => {
   const postsSnap = await firestore.collection("posts").get();
 
-  const grouped: LikesByCountryDate = {};
+  const grouped: Record<string, Record<string, number>> = {};
+  const now = new Date();
+  const thirtyDaysAgo = new Date(now);
+  thirtyDaysAgo.setDate(now.getDate() - 29); // include today
+
+  // Generate all dates in the last 30 days
+  const dateList: string[] = [];
+  for (let i = 0; i < 30; i++) {
+    const d = new Date(thirtyDaysAgo);
+    d.setDate(d.getDate() + i);
+    const isoDate = d.toISOString().split("T")[0];
+    dateList.push(isoDate);
+    grouped[isoDate] = {}; // Initialize with empty objects
+  }
+
+  const allCountries = new Set<string>();
 
   for (const postDoc of postsSnap.docs) {
     const postData = postDoc.data();
@@ -92,29 +107,30 @@ export const getLikesOverTimeByCountry = async () => {
 
     likesSnap.forEach((likeDoc) => {
       const data = likeDoc.data();
-      const likedAt = data.likedAt;
+      const likedAt = data.likedAt?.toDate?.() ?? new Date(data.likedAt);
 
-      if (!likedAt) return;
+      if (!likedAt || likedAt < thirtyDaysAgo || likedAt > now) return;
 
-      const date = new Date(likedAt).toISOString().split("T")[0];
+      const date = likedAt.toISOString().split("T")[0];
 
-      if (!grouped[date]) grouped[date] = {};
+      allCountries.add(country);
       if (!grouped[date][country]) grouped[date][country] = 0;
-
       grouped[date][country]++;
     });
   }
 
-  // Convert to chart format
-  const chartData = Object.entries(grouped)
-    .sort(([a], [b]) => (a > b ? 1 : -1))
-    .map(([date, countries]) => ({
-      date,
-      ...countries,
-    }));
+  // Build final chartData with all countries per day
+  const chartData = dateList.map((date) => {
+    const row: any = { date };
+    allCountries.forEach((country) => {
+      row[country] = grouped[date][country] ?? 0;
+    });
+    return row;
+  });
 
   return chartData;
 };
+
 
 export async function getMostUsedTags(): Promise<
   { tag: string; count: number }[]

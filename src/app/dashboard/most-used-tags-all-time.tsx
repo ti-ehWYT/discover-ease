@@ -88,6 +88,12 @@ export default function MostUsedTagAllTime() {
           </PieChart>
         </ResponsiveContainer>
       )}
+      <div className="text-center text-gray-500 text-sm mt-4">
+        Total tags used by users when creating posts all time. 
+      </div>
+      <div className="text-center text-gray-500 text-sm">
+        This helps identify tag usage trends.
+      </div>
     </div>
   );
 }
