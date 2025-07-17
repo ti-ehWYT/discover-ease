@@ -37,7 +37,7 @@ export default function TopLikedPostsCarousel() {
           </div>  
 
           {/* Center (Highlighted) Post */}
-          <div className="w-1/2 scale-105">
+          <div className="w-1/3 scale-105">
             <PostDialog postItem={posts[0]} allowEdit={false} />
           </div>
 
