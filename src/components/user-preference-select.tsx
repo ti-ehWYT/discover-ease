@@ -17,7 +17,7 @@ export function UserPreferenceMultiSelect({ control, name }: UserPreferenceSelec
       name={name}
       render={({ field }) => (
         <FormItem className="py-3">
-          <FormLabel>User Preference</FormLabel>
+          <FormLabel>User Preference (Choose the charateristic of this post that you think is suit)</FormLabel>
           <Popover>
             <PopoverTrigger asChild>
               <Button
