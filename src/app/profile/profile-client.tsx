@@ -54,7 +54,7 @@ export default function ProfileClient({ userId }: ProfileClientProps) {
     })();
   }, [userId]);
 
-  if (!userId || !userProfile || posts.length === 0) {
+  if (!userId || !userProfile) {
     return (
       <div className="p-4 max-w-5xl mx-auto">
         {/* Profile Skeleton */}
@@ -147,20 +147,26 @@ export default function ProfileClient({ userId }: ProfileClientProps) {
 
         {/* Posts Tab */}
         <TabsContent value="posts">
-          <Masonry
-            breakpointCols={breakpointColumnsObj}
-            className="my-masonry-grid"
-            columnClassName="my-masonry-grid_column"
-          >
-            {posts.map((post, index) => (
-              <div key={post.id || index}>
-                <PostDialog
-                  postItem={post}
-                  allowEdit={currentUserId === userId}
-                />
-              </div>
-            ))}
-          </Masonry>
+          {posts.length > 0 ? (
+            <Masonry
+              breakpointCols={breakpointColumnsObj}
+              className="my-masonry-grid"
+              columnClassName="my-masonry-grid_column"
+            >
+              {posts.map((post, index) => (
+                <div key={post.id || index}>
+                  <PostDialog
+                    postItem={post}
+                    allowEdit={currentUserId === userId}
+                  />
+                </div>
+              ))}
+            </Masonry>
+          ) : (
+            <div className="text-center text-gray-500 py-12">
+              No favourite available yet.
+            </div>
+          )}
         </TabsContent>
 
         {/* Itineraries Tab (placeholder for now) */}

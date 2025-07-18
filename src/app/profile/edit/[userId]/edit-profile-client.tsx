@@ -15,13 +15,13 @@ interface EditProfileProps {
 export default function EditProfilePage({ userId }: EditProfileProps) {
   const auth = useAuth();
   const router = useRouter();
-const fileInputRef = useRef<HTMLInputElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [bio, setBio] = useState("");
   const [gender, setGender] = useState("");
   const [nickname, setNickname] = useState("");
   const [photoURL, setPhotoURL] = useState("");
   const [loading, setLoading] = useState(true);
-const [uploading, setUploading] = useState(false);
+  const [uploading, setUploading] = useState(false);
 
   // Only allow user to edit their own profile
   useEffect(() => {
@@ -47,12 +47,15 @@ const [uploading, setUploading] = useState(false);
     })();
   }, [userId]);
 
-    const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file || !auth?.currentUser) return;
 
-    setUploading    (true);
-    const imageRef = ref(storage, `profileImages/${auth.currentUser.uid}/avatar.jpg`);
+    setUploading(true);
+    const imageRef = ref(
+      storage,
+      `profileImages/${auth.currentUser.uid}/avatar.jpg`
+    );
 
     try {
       await uploadBytes(imageRef, file);
