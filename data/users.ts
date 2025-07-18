@@ -3,6 +3,12 @@ import { firestore, auth } from "../firebase/server";
 import { registerUserSchema } from "../validation/registerUser";
 
 export const getCurrentUsers = async (uid: string) => {
+  if (!uid) {
+    return {
+      error: true,
+      message: "user id not found",
+    };
+  }
   const userRef = firestore.collection("users").doc(uid);
   const snap = await userRef.get();
 
@@ -11,7 +17,6 @@ export const getCurrentUsers = async (uid: string) => {
   }
 
   const userData = snap.data();
-
 
   return { data: JSON.parse(JSON.stringify(userData)) };
 };
@@ -45,14 +50,18 @@ export const registerUser = async (data: {
   }
 };
 
-
 /**
- * Update a user's profile in Firestore (bio, gender, photoURL).
+ * Update a user's profile in Firestore (bio, gender, photoURL, nickname).
  */
 export const updateUserProfile = async (
   userId: string,
-  data: { bio?: string; gender?: string; photoURL?: string, nickname?: string }
+  data: { bio?: string; gender?: string; photoURL?: string; nickname?: string }
 ) => {
+  if (!userId)
+    return {
+      error: true,
+      message: "user id not found",
+    };
   const userRef = firestore.collection("users").doc(userId);
   await userRef.update(data);
 };

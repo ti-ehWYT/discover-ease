@@ -3,10 +3,10 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../../../../../context/auth";
-import { fetchUserProfile, saveUserProfile } from "../../action";
 import { toast } from "sonner";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { storage } from "../../../../../firebase/client";
+import { apiFetch } from "@/lib/apiFetch";
 
 interface EditProfileProps {
   userId: string;
@@ -23,28 +23,29 @@ export default function EditProfilePage({ userId }: EditProfileProps) {
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
 
-  // Only allow user to edit their own profile
-  useEffect(() => {
-    if (!auth?.currentUser?.uid || auth.currentUser.uid !== userId) {
-      router.push(`/profile/${userId}`); // redirect if not owner
-    }
-  }, [auth, userId, router]);
+useEffect(() => {
+  if (!auth?.currentUser) return; // wait until auth is ready
+  if (auth.currentUser.uid !== userId) {
+    router.replace(`/profile/${userId}`); // faster redirect with replace
+  }
+}, [auth?.currentUser, userId]);
+
   useEffect(() => {
     if (!userId) return;
-
-    (async () => {
-      const profile = await fetchUserProfile(userId);
-      if (profile) {
+    apiFetch(`/api/profile?userId=${userId}`)
+      .then((res) => {
+        const profile = res.data;
         setBio(profile.bio || "");
         setGender(profile.gender || "");
         setNickname(profile.nickname || "");
         setPhotoURL(profile.photoURL || "");
         setLoading(false);
-      } else {
+      })
+      .catch((err) => {
+        console.error(err);
         toast.error("Error", { description: "Failed to load user profile" });
         setLoading(false);
-      }
-    })();
+      });
   }, [userId]);
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -72,15 +73,22 @@ export default function EditProfilePage({ userId }: EditProfileProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    try {
-      await saveUserProfile(userId, { bio, gender, photoURL, nickname });
-      router.push(`/profile/${userId}`); // Redirect after save
-    } catch (error) {
-      console.error("Failed to update profile", error);
-    }
-    setLoading(false);
-  };
 
+    try {
+      await apiFetch("/api/profile/update-profile", {
+        method: "PATCH",
+        body: JSON.stringify({ bio, gender, photoURL, nickname, userId }),
+        successMessage: "Profile updated successfully!",
+        errorMessage: "Failed to update profile",
+      });
+
+      router.push(`/profile/${userId}`);
+    } catch (error) {
+      console.error("Profile update failed:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
   if (loading) return <p>Loading...</p>;
 
   return (

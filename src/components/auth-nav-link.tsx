@@ -15,8 +15,8 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { VscDiffAdded } from "react-icons/vsc";
 import { useEffect, useState } from "react";
-import { fetchUserProfile } from "@/app/profile/action";
 import LoginRegisterDialog from "./login-register-dialog";
+import { apiFetch } from "@/lib/apiFetch";
 
 export default function AuthNavLink() {
   const auth = useAuth();
@@ -26,11 +26,14 @@ export default function AuthNavLink() {
 
   useEffect(() => {
     if (!uid) return;
-
-    (async () => {
-      const profile = await fetchUserProfile(uid);
-      setUserProfile(profile);
-    })();
+    apiFetch(`/api/profile?userId=${uid}`)
+      .then((profile) => {
+        setUserProfile(profile.data);
+      })
+      .catch((err) => {
+        console.error(err);
+        setUserProfile(null);
+      })
   }, [uid]);
 
   return (

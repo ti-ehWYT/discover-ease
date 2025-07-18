@@ -6,10 +6,25 @@ type ApiFetchOptions = RequestInit & {
 };
 
 export async function apiFetch(url: string, options?: ApiFetchOptions) {
-  const { successMessage, errorMessage, ...fetchOptions } = options || {};
+  const {
+    successMessage,
+    errorMessage,
+    headers = {},
+    ...fetchOptions
+  } = options || {};
+
+  const defaultHeaders = {
+    "Content-Type": "application/json",
+    Accept: "application/json",
+    ...headers, // allow override
+  };
 
   try {
-    const res = await fetch(url, fetchOptions);
+    const res = await fetch(url, {
+      ...fetchOptions,
+      headers: defaultHeaders,
+    });
+
     const data = await res.json();
 
     if (!res.ok) {

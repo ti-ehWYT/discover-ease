@@ -1,22 +1,22 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import {
-  fetchUserProfile,
-  fetchUserPosts,
-  fetchUserItineraries,
-  fetchUserFavorite,
-} from "./action";
 import PostDialog from "@/components/post-dialog";
 import { useAuth } from "../../../context/auth";
 import { Post } from "../../../type/post";
 import { EllipsisVertical, Mars, Venus } from "lucide-react";
 import Link from "next/link";
 import Masonry from "react-masonry-css";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ItineraryType } from "../../../type/itinerary";
 import ItineraryCard from "@/components/itinerary-card";
+import { apiFetch } from "@/lib/apiFetch";
 
 const breakpointColumnsObj = {
   default: 3,
@@ -32,32 +32,53 @@ export default function ProfileClient({ userId }: ProfileClientProps) {
   const auth = useAuth();
   const currentUserId = auth?.currentUser?.uid;
 
+  const [type, setType] = useState<"posts" | "itineraries" | "favourite">("posts");
+
   const [userProfile, setUserProfile] = useState<any>(null);
   const [posts, setPosts] = useState<Post[]>([]);
   const [itinerary, setItinerary] = useState<ItineraryType[]>([]);
   const [favItinerary, setFavItinerary] = useState<ItineraryType[]>([]);
+
+  // Fetch user profile once 
   useEffect(() => {
     if (!userId) return;
-
-    (async () => {
-      const [profile, userPosts, userItinerary, userFavorite] =
-        await Promise.all([
-          fetchUserProfile(userId),
-          fetchUserPosts(userId),
-          fetchUserItineraries(userId),
-          fetchUserFavorite(userId),
-        ]);
-      setUserProfile(profile);
-      setPosts(userPosts);
-      setItinerary(userItinerary);
-      setFavItinerary(userFavorite);
-    })();
+    apiFetch(`/api/profile?userId=${userId}`)
+      .then((profile) => setUserProfile(profile.data))
+      .catch(() => setUserProfile(null));
   }, [userId]);
 
+  // Fetch user contents based on tab type and userId
+  useEffect(() => {
+    if (!userId) return;
+  // Check if data for current tab is already loaded
+  if (
+    (type === "posts" && posts.length > 0) ||
+    (type === "itineraries" && itinerary.length > 0) ||
+    (type === "favourite" && favItinerary.length > 0)
+  ) {
+    // Data already loaded, skip fetching
+    return;
+  }
+    apiFetch(`/api/profile/user-contents?userId=${userId}&type=${type}`)
+      .then((res) => {
+        const data = res.data;
+        // Update appropriate state based on type
+        if (type === "posts") setPosts(data || []);
+        else if (type === "itineraries") setItinerary(data || []);
+        else if (type === "favourite") setFavItinerary(data || []);
+      })
+      .catch(() => {
+        if (type === "posts") setPosts([]);
+        else if (type === "itineraries") setItinerary([]);
+        else if (type === "favourite") setFavItinerary([]);
+      });
+  }, [userId, type]);
+
   if (!userId || !userProfile) {
+    // Show loading skeleton here, omitted for brevity...
     return (
       <div className="p-4 max-w-5xl mx-auto">
-        {/* Profile Skeleton */}
+               {/* Profile Skeleton */}
         <div className="flex flex-col sm:flex-row items-center sm:items-start sm:justify-between gap-4 mb-8">
           <Skeleton className="w-32 h-32 rounded-full" />
 
@@ -84,7 +105,6 @@ export default function ProfileClient({ userId }: ProfileClientProps) {
     <div className="p-4 max-w-5xl mx-auto">
       {/* Profile Header */}
       <div className="flex flex-col sm:flex-row items-center sm:items-start sm:justify-between gap-4 mb-8">
-        {/* Avatar */}
         <div className="w-32 h-32 rounded-full overflow-hidden border-2 border-gray-300">
           <img
             src={userProfile?.photoURL || "/default-avatar.png"}
@@ -93,9 +113,7 @@ export default function ProfileClient({ userId }: ProfileClientProps) {
           />
         </div>
 
-        {/* User Info */}
         <div className="flex-1 sm:ml-6 w-full relative">
-          {/* Edit Button (only show if viewing own profile) */}
           {currentUserId === userId && (
             <div className="absolute top-0 right-0">
               <Link href={`/profile/edit/${userId}`}>
@@ -105,18 +123,13 @@ export default function ProfileClient({ userId }: ProfileClientProps) {
           )}
 
           <h2 className="text-2xl font-bold">
-            {userProfile?.nickname ||
-              userProfile?.displayName ||
-              userProfile?.email}
+            {userProfile?.nickname || userProfile?.displayName || userProfile?.email}
           </h2>
 
           {userProfile?.bio && (
-            <p className="text-gray-600 mt-2 whitespace-pre-wrap">
-              {userProfile.bio}
-            </p>
+            <p className="text-gray-600 mt-2 whitespace-pre-wrap">{userProfile.bio}</p>
           )}
 
-          {/* Gender Icons */}
           {userProfile?.gender && (
             <div className="inline-flex items-center gap-1 mt-3 px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-sm w-fit">
               {userProfile.gender === "male" && (
@@ -138,14 +151,19 @@ export default function ProfileClient({ userId }: ProfileClientProps) {
 
       <hr className="my-8 border-t border-gray-300" />
 
-      <Tabs defaultValue="posts" className="w-full">
+      {/* Tabs with onValueChange to update type */}
+      <Tabs
+        defaultValue="posts"
+        value={type}
+        onValueChange={(val) => setType(val as typeof type)}
+        className="w-full"
+      >
         <TabsList className="mb-6">
           <TabsTrigger value="posts">Posts</TabsTrigger>
           <TabsTrigger value="itineraries">Itineraries</TabsTrigger>
           <TabsTrigger value="favourite">Favourite</TabsTrigger>
         </TabsList>
 
-        {/* Posts Tab */}
         <TabsContent value="posts">
           {posts.length > 0 ? (
             <Masonry
@@ -155,21 +173,15 @@ export default function ProfileClient({ userId }: ProfileClientProps) {
             >
               {posts.map((post, index) => (
                 <div key={post.id || index}>
-                  <PostDialog
-                    postItem={post}
-                    allowEdit={currentUserId === userId}
-                  />
+                  <PostDialog postItem={post} allowEdit={currentUserId === userId} />
                 </div>
               ))}
             </Masonry>
           ) : (
-            <div className="text-center text-gray-500 py-12">
-              No favourite available yet.
-            </div>
+            <div className="text-center text-gray-500 py-12">No posts available yet.</div>
           )}
         </TabsContent>
 
-        {/* Itineraries Tab (placeholder for now) */}
         <TabsContent value="itineraries">
           {itinerary.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -186,9 +198,7 @@ export default function ProfileClient({ userId }: ProfileClientProps) {
               ))}
             </div>
           ) : (
-            <div className="text-center text-gray-500 py-12">
-              No Itinerary available yet.
-            </div>
+            <div className="text-center text-gray-500 py-12">No itinerary available yet.</div>
           )}
         </TabsContent>
 
@@ -208,9 +218,7 @@ export default function ProfileClient({ userId }: ProfileClientProps) {
               ))}
             </div>
           ) : (
-            <div className="text-center text-gray-500 py-12">
-              No favourite available yet.
-            </div>
+            <div className="text-center text-gray-500 py-12">No favourite available yet.</div>
           )}
         </TabsContent>
       </Tabs>

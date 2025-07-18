@@ -10,10 +10,7 @@ export default function TopLikedPostsCarousel() {
   const [posts, setPosts] = useState<Post[]>([]);
 
   useEffect(() => {
-    apiFetch("/api/dashboard/top-liked-posts", {
-      successMessage: "Top liked posts loaded successfully!",
-      errorMessage: "Failed to load posts",
-    })
+    apiFetch("/api/dashboard/top-liked-posts")
       .then((data) => setPosts(data.slice(0, 3)))
       .catch((error) => {
         console.error(error);

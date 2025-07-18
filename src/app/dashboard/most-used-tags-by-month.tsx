@@ -29,10 +29,7 @@ export default function MostUsedTagByMonth() {
   });
 
   useEffect(() => {
-    apiFetch(`/api/dashboard/most-used-tag-by-month?yearMonth=${yearMonth}`, {
-      successMessage: "Most used tag by month loaded successfully!",
-      errorMessage: "Failed to load Most used tag by month",
-    }).then((data) => {
+    apiFetch(`/api/dashboard/most-used-tag-by-month?yearMonth=${yearMonth}`).then((data) => {
       const tagsArray = Object.entries(data.tagCount ?? {}).map(
         ([tag, count]) => ({
           tag,

@@ -22,10 +22,7 @@ export default function SearchedRanking() {
   const [ranking, setRanking] = useState<SearchRankingItem[]>([]);
 
   useEffect(() => {
-    apiFetch("/api/dashboard/search-ranking", {
-      successMessage: "Search Ranking loaded successfully!",
-      errorMessage: "Failed to load Search Ranking",
-    })
+    apiFetch("/api/dashboard/search-ranking")
       .then((data) => {
         setRanking(data);
       })
