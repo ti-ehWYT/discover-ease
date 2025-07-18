@@ -8,15 +8,6 @@ import {
   Radar,
   Tooltip,
 } from "recharts";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { TrendingUp } from "lucide-react";
 import { apiFetch } from "@/lib/apiFetch";
 
 type MonthlyEngagementType = {

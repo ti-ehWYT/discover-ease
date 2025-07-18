@@ -30,7 +30,34 @@ export default function MonthlyEngagementSummary() {
     const query = yearMonth ? `?yearMonth=${yearMonth}` : "";
     apiFetch(`/api/dashboard/monthly-engagement-summary${query}`)
       .then((res) => {
-        setData(res);
+        if (!yearMonth && Array.isArray(res)) {
+          // Combine all months into one object
+          const combined: MonthlyEngagementType = res.reduce(
+            (acc, curr) => ({
+              month: "All Time",
+              createdPost: acc.createdPost + curr.createdPost,
+              createdItinerary: acc.createdItinerary + curr.createdItinerary,
+              likes: acc.likes + curr.likes,
+              comments: acc.comments + curr.comments,
+              favorites: acc.favorites + curr.favorites,
+              views: acc.views + curr.views,
+              totalEngagement: acc.totalEngagement + curr.totalEngagement,
+            }),
+            {
+              month: "All Time",
+              createdPost: 0,
+              createdItinerary: 0,
+              likes: 0,
+              comments: 0,
+              favorites: 0,
+              views: 0,
+              totalEngagement: 0,
+            }
+          );
+          setData(combined);
+        } else {
+          setData(res);
+        }
       })
       .catch((err) => {
         console.error(err);
@@ -47,7 +74,6 @@ export default function MonthlyEngagementSummary() {
       <div className="h-4 bg-gray-300 rounded w-1/4" /> {/* Likes */}
       <div className="h-4 bg-gray-300 rounded w-1/4" /> {/* Comments */}
       <div className="h-4 bg-gray-300 rounded w-1/4" /> {/* Favorites */}
-      <div className="h-4 bg-gray-300 rounded w-1/4" /> {/* Views */}
       <div className="h-4 bg-gray-400 rounded w-1/2" /> {/* Total */}
     </div>
   );
@@ -61,7 +87,6 @@ export default function MonthlyEngagementSummary() {
       <p>❤️ Likes: {item.likes}</p>
       <p>💬 Comments: {item.comments}</p>
       <p>⭐ Favorites: {item.favorites}</p>
-      <p>👀 Views: {item.views}</p>
       <p className="font-bold">📊 Total: {item.totalEngagement}</p>
     </div>
   );
@@ -87,13 +112,7 @@ export default function MonthlyEngagementSummary() {
         </Button>
       </div>
 
-      {loading && (
-        <div className="space-y-4">
-          {Array.from({ length: yearMonth ? 1 : 3 }).map((_, i) => (
-            <React.Fragment key={i}>{renderSkeleton()}</React.Fragment>
-          ))}
-        </div>
-      )}
+      {loading && <div className="space-y-4">{renderSkeleton()}</div>}
       {error && <p className="text-red-500">{error}</p>}
 
       {/* Render engagement */}
