@@ -17,18 +17,9 @@ type MostUseTagType = {
 };
 
 const COLORS = [
-  "#22c55e",
-  "#4ade80",
-  "#16a34a",
-  "#84cc16",
-  "#f59e0b",
-  "#f97316",
-  "#ef4444",
-  "#3b82f6",
-  "#8b5cf6",
-  "#ec4899",
+  "#8884d8", "#82ca9d", "#ffc658", "#ff8042", "#8dd1e1",
+  "#d0ed57", "#a4de6c", "#d88884", "#bfa8ff", "#ffa07a",
 ];
-
 export default function MostUsedTagAllTime() {
   const [tags, setTags] = useState<MostUseTagType[]>([]);
 
@@ -45,7 +36,7 @@ export default function MostUsedTagAllTime() {
 
   return (
     <div className="bg-white dark:bg-muted rounded-xl p-6">
-      <h2 className="text-2xl font-bold mb-1 text-center">Most Used Tags</h2>
+      <h2 className="text-2xl font-bold mb-1 text-center">Top 10 Hashtags Used</h2>
       <p className="text-sm text-muted-foreground mb-4 text-center">
         (All Time)
       </p>
@@ -63,9 +54,7 @@ export default function MostUsedTagAllTime() {
               cy="45%" // Shift up slightly
               outerRadius={100}
               labelLine={false}
-              label={({ tag, percent }) =>
-                `${tag}: ${(percent! * 100).toFixed(0)}%`
-              }
+              label
             >
               {tags.map((_, idx) => (
                 <Cell key={`cell-${idx}`} fill={COLORS[idx % COLORS.length]} />
@@ -86,7 +75,7 @@ export default function MostUsedTagAllTime() {
         </ResponsiveContainer>
       )}
       <div className="text-center text-gray-500 text-sm mt-4">
-        Total tags used by users when creating posts all time. 
+        Total tags used by users when creating posts all time.
       </div>
       <div className="text-center text-gray-500 text-sm">
         This helps identify tag usage trends.

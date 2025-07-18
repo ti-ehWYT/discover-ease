@@ -12,6 +12,7 @@ type MonthlyEngagementType = {
   comments: number;
   favorites: number;
   totalEngagement: number;
+  views: number;
 };
 
 export default function MonthlyEngagementSummary() {
@@ -46,6 +47,7 @@ export default function MonthlyEngagementSummary() {
       <div className="h-4 bg-gray-300 rounded w-1/4" /> {/* Likes */}
       <div className="h-4 bg-gray-300 rounded w-1/4" /> {/* Comments */}
       <div className="h-4 bg-gray-300 rounded w-1/4" /> {/* Favorites */}
+      <div className="h-4 bg-gray-300 rounded w-1/4" /> {/* Views */}
       <div className="h-4 bg-gray-400 rounded w-1/2" /> {/* Total */}
     </div>
   );
@@ -59,6 +61,7 @@ export default function MonthlyEngagementSummary() {
       <p>❤️ Likes: {item.likes}</p>
       <p>💬 Comments: {item.comments}</p>
       <p>⭐ Favorites: {item.favorites}</p>
+      <p>👀 Views: {item.views}</p>
       <p className="font-bold">📊 Total: {item.totalEngagement}</p>
     </div>
   );

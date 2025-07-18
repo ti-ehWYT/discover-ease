@@ -23,7 +23,7 @@ function toValidDate(input: any): Date | null {
 }
 
 export const getSearchRanking = async () => {
-    const snap = await firestore.collection("searchRanking").orderBy("count", "desc")
+  const snap = await firestore.collection("searchRanking").orderBy("count", "desc")
     .limit(10)
     .get();
 
@@ -172,8 +172,44 @@ export async function getMostUsedTags(): Promise<
   return Object.entries(tagFrequency)
     .map(([tag, count]) => ({ tag, count }))
     .sort((a, b) => b.count - a.count)
-    .slice(0, 5); // ✅ Top 10 by frequency
+    .slice(0, 10); // ✅ Top 10 by frequency
 }
+
+export async function getMostUsedUserPreference(): Promise<
+  { tag: string; count: number }[]
+> {
+  const postQuery = firestore.collection("posts").orderBy("created", "desc");
+  const snap = await postQuery.get();
+
+  const tagFrequency: Record<string, number> = {};
+
+  const posts: Post[] = snap.docs.map((doc) => {
+    const data = doc.data();
+
+    return {
+      ...data,
+      tags: Array.isArray(data.tags)
+        ? data.tags
+        : [],
+    } as Post;
+  });
+
+  posts.forEach((post) => {
+    const preferences = post.user_preference ?? [];
+
+    preferences.forEach((tag) => {
+      const normalized = tag.trim().toLowerCase();
+      if (normalized) {
+        tagFrequency[normalized] = (tagFrequency[normalized] || 0) + 1;
+      }
+    });
+  });
+
+  return Object.entries(tagFrequency)
+    .map(([tag, count]) => ({ tag, count }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 5); // Top 10 tags
+};
 
 export async function getTagsForMonth(
   yearMonth?: string
@@ -230,7 +266,7 @@ export async function getTagsForMonth(
 export async function getMonthlyEngagement(yearMonth?: string) {
   const result: Record<
     string,
-    { createdPost: number; createdItinerary: number; likes: number; comments: number; favorites: number }
+    { createdPost: number; createdItinerary: number; likes: number; comments: number; favorites: number; views: number }
   > = {};
 
   function getYM(date: Date) {
@@ -251,7 +287,7 @@ export async function getMonthlyEngagement(yearMonth?: string) {
     const ym = createdAt ? getYM(createdAt) : null;
 
     if (createdAt && isInFilter(createdAt)) {
-      if (!result[ym!]) result[ym!] = { createdPost: 0, createdItinerary: 0, likes: 0, comments: 0, favorites: 0 };
+      if (!result[ym!]) result[ym!] = { createdPost: 0, createdItinerary: 0, likes: 0, comments: 0, favorites: 0, views: 0 };
       result[ym!].createdPost++;
     }
 
@@ -260,8 +296,18 @@ export async function getMonthlyEngagement(yearMonth?: string) {
       const likedAt = toValidDate(likeDoc.data().likedAt);
       const ym = likedAt ? getYM(likedAt) : null;
       if (likedAt && isInFilter(likedAt)) {
-        if (!result[ym!]) result[ym!] = { createdPost: 0, createdItinerary: 0, likes: 0, comments: 0, favorites: 0 };
+        if (!result[ym!]) result[ym!] = { createdPost: 0, createdItinerary: 0, likes: 0, comments: 0, favorites: 0, views: 0 };
         result[ym!].likes++;
+      }
+    });
+
+    const viewSnap = await firestore.collection("posts").doc(postId).collection("views").get();
+    viewSnap.forEach((viewDoc) => {
+      const viewAt = toValidDate(viewDoc.data().viewAt);
+      const ym = viewAt ? getYM(viewAt) : null;
+      if (viewAt && isInFilter(viewAt)) {
+        if (!result[ym!]) result[ym!] = { createdPost: 0, createdItinerary: 0, likes: 0, comments: 0, favorites: 0, views: 0 };
+        result[ym!].views++;
       }
     });
 
@@ -270,7 +316,7 @@ export async function getMonthlyEngagement(yearMonth?: string) {
       const commentAt = toValidDate(commentDoc.data().createdAt);
       const ym = commentAt ? getYM(commentAt) : null;
       if (commentAt && isInFilter(commentAt)) {
-        if (!result[ym!]) result[ym!] = { createdPost: 0, createdItinerary: 0, likes: 0, comments: 0, favorites: 0 };
+        if (!result[ym!]) result[ym!] = { createdPost: 0, createdItinerary: 0, likes: 0, comments: 0, favorites: 0, views: 0 };
         result[ym!].comments++;
       }
     });
@@ -284,7 +330,7 @@ export async function getMonthlyEngagement(yearMonth?: string) {
     const ym = createdAt ? getYM(createdAt) : null;
 
     if (createdAt && isInFilter(createdAt)) {
-      if (!result[ym!]) result[ym!] = { createdPost: 0, createdItinerary: 0, likes: 0, comments: 0, favorites: 0 };
+      if (!result[ym!]) result[ym!] = { createdPost: 0, createdItinerary: 0, likes: 0, comments: 0, favorites: 0, views: 0 };
       result[ym!].createdItinerary++;
     }
 
@@ -293,7 +339,7 @@ export async function getMonthlyEngagement(yearMonth?: string) {
       const favoritedAt = toValidDate(favDoc.data().favoritedAt);
       const ym = favoritedAt ? getYM(favoritedAt) : null;
       if (favoritedAt && isInFilter(favoritedAt)) {
-        if (!result[ym!]) result[ym!] = { createdPost: 0, createdItinerary: 0, likes: 0, comments: 0, favorites: 0 };
+        if (!result[ym!]) result[ym!] = { createdPost: 0, createdItinerary: 0, likes: 0, comments: 0, favorites: 0, views: 0 };
         result[ym!].favorites++;
       }
     });
@@ -302,7 +348,7 @@ export async function getMonthlyEngagement(yearMonth?: string) {
   // Format result
   const formatted = Object.entries(result).map(([month, stats]) => {
     const totalEngagement =
-      stats.createdPost + stats.createdItinerary + stats.likes + stats.comments + stats.favorites;
+      stats.createdPost + stats.createdItinerary + stats.likes + stats.comments + stats.favorites + stats.views;
     return { month, ...stats, totalEngagement };
   });
 
@@ -316,6 +362,7 @@ export async function getMonthlyEngagement(yearMonth?: string) {
         likes: 0,
         comments: 0,
         favorites: 0,
+        views: 0,
         totalEngagement: 0,
       }
     );

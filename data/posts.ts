@@ -52,6 +52,9 @@ export const getAuthorPosts = async (uid: string) => {
       likeCount: data.likeCount ?? 0,
       viewCount: data.viewCount ?? 0,
       avatar: data.avatar ?? "",
+      user_preference: Array.isArray(data.user_preference)
+        ? data.user_preference
+        : [],
       created: data.created?.toDate().toISOString() ?? null,
       authorName: data.authorName ?? "",
     };
