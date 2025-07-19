@@ -360,3 +360,17 @@ export async function getMonthlyEngagement(yearMonth?: string) {
     return formatted.sort((a, b) => a.month.localeCompare(b.month)); // ascending by month
   }
 }
+
+export async function getTotalView(): Promise<number> {
+  const postSnap = await firestore.collection("posts").get();
+
+  let totalViews = 0;
+
+  postSnap.forEach((doc) => {
+    const data = doc.data();
+    const viewCount = typeof data.viewCount === "number" ? data.viewCount : 0;
+    totalViews += viewCount;
+  });
+
+  return totalViews;
+}

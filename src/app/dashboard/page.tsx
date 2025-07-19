@@ -6,6 +6,7 @@ import TopLikedPosts from "./top-liked-posts";
 import LikesOverTimeByCountry from "./likes-over-time-by-country";
 import MonthlyEngagementSummary from "./monthly-engagement-summary";
 import HashtagPieChart from "./most-used-user-preference";
+import TotalView from "./total-view";
 
 export default async function Dashboard() {
   return (
@@ -46,7 +47,7 @@ export default async function Dashboard() {
           <HashtagPieChart />
         </div>
         <div className="bg-white dark:bg-muted rounded-xl shadow p-4 ">
-          <MostUsedTagByMonth />
+          <TotalView />
         </div>
       </div>
 

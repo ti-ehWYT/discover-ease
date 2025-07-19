@@ -29,7 +29,8 @@ export default function MostUsedTagByMonth() {
   });
 
   useEffect(() => {
-    apiFetch(`/api/dashboard/most-used-tag-by-month?yearMonth=${yearMonth}`).then((data) => {
+    apiFetch(`/api/dashboard/most-used-tag-by-month?yearMonth=${yearMonth}`)
+    .then((data) => {
       const tagsArray = Object.entries(data.tagCount ?? {}).map(
         ([tag, count]) => ({
           tag,
