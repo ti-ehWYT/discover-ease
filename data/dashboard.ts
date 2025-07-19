@@ -4,12 +4,6 @@ import { Timestamp } from "firebase/firestore";
 import { Post } from "../type/post";
 
 
-type LikesByCountryDate = {
-  [date: string]: {
-    [country: string]: number;
-  };
-};
-
 
 function toValidDate(input: any): Date | null {
   if (input instanceof Timestamp) {
@@ -360,17 +354,36 @@ export async function getMonthlyEngagement(yearMonth?: string) {
     return formatted.sort((a, b) => a.month.localeCompare(b.month)); // ascending by month
   }
 }
+function countryToISOCode(country: string): string {
+  const map: Record<string, string> = {
+    Singapore: "SG",
+    "Hong Kong": "HK",
+    Japan: "JP",
+    Malaysia: "MY",
+    Sweden: "SE",
+    Thailand: "TH",
+  };
+  return map[country] || "";
+}
 
-export async function getTotalView(): Promise<number> {
-  const postSnap = await firestore.collection("posts").get();
+export async function getTotalViewsByCountry() {
+  const snap = await firestore.collection("posts").get();
+  const countryViewMap: Record<string, number> = {};
 
-  let totalViews = 0;
-
-  postSnap.forEach((doc) => {
-    const data = doc.data();
-    const viewCount = typeof data.viewCount === "number" ? data.viewCount : 0;
-    totalViews += viewCount;
+  snap.forEach((doc) => {
+    const { country, viewCount } = doc.data();
+    const views = typeof viewCount === "number" ? viewCount : 0;
+    if (country) {
+      countryViewMap[country] = (countryViewMap[country] || 0) + views;
+    }
   });
 
-  return totalViews;
+  // Convert object to array for frontend
+  const result = Object.entries(countryViewMap).map(([country, views]) => ({
+    id: countryToISOCode(country),  // See note below about this
+    name: country,
+    views,
+  }));
+
+  return result;
 }

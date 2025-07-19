@@ -33,11 +33,20 @@ export default function AuthNavLink() {
       .catch((err) => {
         console.error(err);
         setUserProfile(null);
-      })
+      });
   }, [uid]);
 
   return (
     <>
+      <Link className="px-8 uppercase hover:underline" href="/">
+        Feed
+      </Link>
+      <Link className="px-8 uppercase hover:underline" href="/itinerary">
+        Itinerary
+      </Link>
+      <Link className="px-8 uppercase hover:underline" href="/for-you">
+        For You
+      </Link>
       {!!userProfile && auth?.currentUser && (
         <>
           {!!auth.customClaims?.admin && (
@@ -72,14 +81,14 @@ export default function AuthNavLink() {
                 )}
                 {!userProfile?.photoURL && (
                   <AvatarFallback>
-                    {(userProfile?.nickname || userProfile?.displayName)}
+                    {userProfile?.nickname || userProfile?.displayName}
                   </AvatarFallback>
                 )}
               </Avatar>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
               <DropdownMenuLabel>
-                <div>{(userProfile?.nickname || userProfile?.displayName)}</div>
+                <div>{userProfile?.nickname || userProfile?.displayName}</div>
                 <div className="font-normal text-xs">{userProfile?.email}</div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />

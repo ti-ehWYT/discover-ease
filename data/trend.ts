@@ -26,23 +26,7 @@ export const incrementCountrySearch = async (country: string) => {
   return { success: true };
 };
 
-export const getSearchRanking = async () => {
-  const snap = await firestore
-    .collection("searchRanking")
-    .orderBy("count", "desc")
-    .limit(10)
-    .get();
 
-  const data = snap.docs.map((doc) => {
-    const docData = doc.data();
-    return {
-      country: doc.id,
-      count: typeof docData.count === "number" ? docData.count : 0,
-    };
-  });
-
-  return data;
-};
 
 export const getLatestSearchRanking = async () => {
   const now = new Date();

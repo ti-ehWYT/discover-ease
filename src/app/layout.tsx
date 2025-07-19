@@ -44,15 +44,6 @@ export default function RootLayout({
               <span className="text-xl font-bold">Discover Ease</span>
             </Link>
             <div className="flex items-center">
-              <Link className="px-8 uppercase hover:underline" href="/">
-                Feed
-              </Link>
-              <Link className="px-8 uppercase hover:underline" href="/itinerary">
-                Itinerary
-              </Link>
-              <Link className="px-8 uppercase hover:underline" href="/for-you">
-                For You
-              </Link>
               <AuthNavLink />
             </div>
           </nav>

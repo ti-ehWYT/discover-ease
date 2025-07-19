@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
 import { Post } from "../../type/post";
 import PostDialog from "@/components/post-dialog";
 import SearchBar from "@/components/search-bar";
@@ -15,7 +16,17 @@ export default function HomePage({
   searchRanking: { country: string; count: number }[];
 }) {
   const [filteredPosts, setFilteredPosts] = useState<Post[]>(initialPosts);
+  const [query, setQuery] = useState("");
+  const pathname = usePathname();
+
+  useEffect(() => {
+    // Reset search on route change
+    setFilteredPosts(initialPosts);
+    setQuery("");
+  }, [pathname, initialPosts]);
+
   const handleSearch = async (query: string) => {
+    setQuery(query);
     if (!query) {
       setFilteredPosts(initialPosts);
       return;
@@ -31,16 +42,16 @@ export default function HomePage({
   };
 
   const breakpointColumnsObj = {
-    default: 3, // 3 columns normally
-    1024: 2,    // 2 columns at <= 1024px width
-    640: 1,     // 1 column at <= 640px width (mobile)
+    default: 3,
+    1024: 2,
+    640: 1,
   };
 
   return (
     <>
       <div className="flex flex-col sm:flex-row justify-between items-center sm:items-center px-4 gap-4">
         <div className="flex-1 items-center">
-          <SearchBar onSearch={handleSearch} />
+          <SearchBar onSearch={handleSearch} value={query} setValue={setQuery}/>
         </div>
 
         <div className="flex flex-1 items-center gap-4 bg-white mb-2">
@@ -77,6 +88,4 @@ export default function HomePage({
       )}
     </>
   );
-
-
 }
